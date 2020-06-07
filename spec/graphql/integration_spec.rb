@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Graphql::Groups do
   describe 'using graphql' do
     it 'should return data' do
-      author = Author.create(name: 'name', age: 1)
+      Author.create(name: 'name', age: 1)
 
       query = GQLi::DSL.query {
         groups {
