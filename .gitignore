@@ -159,5 +159,7 @@ tags
 [._]*.un~
 
 # End of https://www.toptal.com/developers/gitignore/api/ruby,rubymine+all,vim
-#
+
 .tool-versions
+.rspec_status
+test.db
