@@ -5,18 +5,22 @@ require 'spec_helper'
 RSpec.describe Graphql::Groups do
   describe 'using graphql' do
     it 'should return data' do
-      author = Author.create(name: 'name')
+      author = Author.create(name: 'name', age: 1)
 
       query = GQLi::DSL.query {
-        authors {
-          name
+        groups {
+          age {
+            key
+            count
+          }
         }
       }.to_gql
 
       result = GroupsSchema.execute(query)
 
-      result_name = result['data']['authors'][0]['name']
-      expect(result_name).to eq(author.name)
+      group = result['data']['groups']['age'][0]
+      expect(group['key']).to eq('1')
+      expect(group['count']).to eq(1)
     end
   end
 end

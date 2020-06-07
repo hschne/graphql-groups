@@ -4,20 +4,19 @@ require 'graphql'
 
 class BaseType < GraphQL::Schema::Object; end
 
-class AuthorType < BaseType
-  field :name, String, null: false
-  field :age, Int, null: false
-end
-
-class BookType < BaseType
-  field :name, String, null: false
-end
+require_relative 'types/author_group_type'
 
 class QueryType < BaseType
-  field :authors, [AuthorType], null: false
+
+  field :groups, AuthorGroupType, null: false, extras: [:lookahead]
 
   def authors
     Author.all
+  end
+
+  def groups(lookahead:)
+    query = GraphQL::Groups::LookaheadParser.parse(lookahead)
+    GraphQL::Groups::QueryExecutor.new.run(Author.all, query)
   end
 end
 
