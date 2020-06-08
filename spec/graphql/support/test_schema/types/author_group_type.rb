@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
-require_relative 'author_group_result_type'
 require 'graphql/groups'
 
 class AuthorGroupType < GraphQL::Groups::GroupType
+  scope { Author.all }
 
-  by :age, AuthorGroupResultType
+  by :age
+  by :name
 end

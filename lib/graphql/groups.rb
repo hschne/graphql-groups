@@ -5,7 +5,6 @@ require 'graphql/groups/query_executor'
 require 'graphql/groups/lookahead_parser'
 
 require 'graphql/groups/group_type'
-require 'graphql/groups/group_result_type'
 
 module GraphQL
   module Groups
@@ -22,18 +21,14 @@ module GraphQL
     module ClassMethods
       KEYS = %i[type default description required camelize].freeze
 
-      def group(name, type, scope:, **options)
+      def group(name, type, **options)
         # TODO: Error handling, check if type is GraphQL type etc
+
         field name, type, extras: [:lookahead], null: false, **options
 
         define_method name do |lookahead: nil|
-          query = GraphQL::Groups::LookaheadParser.parse(lookahead)
-          GraphQL::Groups::QueryExecutor.new.run(scope, query)
+          type.execute(lookahead)
         end
-      end
-
-      def scope(&block)
-        config[:scope] = block
       end
 
       def result(&block)
