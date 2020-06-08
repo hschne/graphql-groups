@@ -8,7 +8,7 @@ RSpec.describe Graphql::Groups do
       Author.create(name: 'name', age: 1)
 
       query = GQLi::DSL.query {
-        groups {
+        authorGroups {
           age {
             key
             count
@@ -18,7 +18,7 @@ RSpec.describe Graphql::Groups do
 
       result = GroupsSchema.execute(query)
 
-      group = result['data']['groups']['age'][0]
+      group = result['data']['authorGroups']['age'][0]
       expect(group['key']).to eq('1')
       expect(group['count']).to eq(1)
     end

@@ -1,13 +1,9 @@
 # frozen_string_literal: true
 
 require_relative 'author_group_result_type'
+require 'graphql/groups'
 
-class AuthorGroupType < BaseType
-  alias group object
+class AuthorGroupType < GraphQL::Groups::GroupType
 
-  field :age, [AuthorGroupResultType], null: false
-
-  def age
-    group[:age]
-  end
+  by :age, AuthorGroupResultType
 end

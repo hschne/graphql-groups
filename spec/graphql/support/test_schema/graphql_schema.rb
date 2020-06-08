@@ -1,23 +1,17 @@
 # frozen_string_literal: true
 
 require 'graphql'
+require 'graphql/groups'
 
 class BaseType < GraphQL::Schema::Object; end
 
+require_relative 'models'
 require_relative 'types/author_group_type'
 
 class QueryType < BaseType
+  include GraphQL::Groups
 
-  field :groups, AuthorGroupType, null: false, extras: [:lookahead]
-
-  def authors
-    Author.all
-  end
-
-  def groups(lookahead:)
-    query = GraphQL::Groups::LookaheadParser.parse(lookahead)
-    GraphQL::Groups::QueryExecutor.new.run(Author.all, query)
-  end
+  group :author_groups, AuthorGroupType, scope: Author.all
 end
 
 class GroupsSchema < GraphQL::Schema
