@@ -22,17 +22,11 @@ module GraphQL
       KEYS = %i[type default description required camelize].freeze
 
       def group(name, type, **options)
-        # TODO: Error handling, check if type is GraphQL type etc
-
         field name, type, extras: [:lookahead], null: false, **options
 
         define_method name do |lookahead: nil|
           type.execute(lookahead)
         end
-      end
-
-      def result(&block)
-        config[:result] = block
       end
     end
   end

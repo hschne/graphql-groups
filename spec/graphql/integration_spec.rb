@@ -6,6 +6,7 @@ RSpec.describe Graphql::Groups do
   describe 'using graphql' do
     it 'should return data' do
       Author.create(name: 'name', age: 1)
+      Author.create(name: 'name', age: 2)
 
       query = GQLi::DSL.query {
         authorGroups {

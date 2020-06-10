@@ -4,14 +4,19 @@ module GraphQL
   module Groups
     # A query class used for fetching statistics for a collection of tasks. This is used by the GraphQL statistics query
     class QueryExecutor
-      def self.run(tasks, query)
-        QueryExecutor.new.run(tasks, query)
+      def self.run(query, queries)
+        QueryExecutor.new.run(scope, query, queries)
       end
+
+      attr_reader :scope, :query
 
       # Collect receives an active record relation for tasks as well as a has that represents the statistics to collect.
       # It returns a hash that can be consumed by GraphQL to provide a response. One of the main issues here is that
       # GraphQL can construct arbitrary nested queries (e.g. grouping by section, created_at and updated_at).
-      def run(tasks, query)
+      def run(scope, query, queries)
+        @scope   = scope
+        @query   = query
+        @queries = queries
         # Collecting the required data is a three step process.
         #
         # First, we construct all grouping queries that we will have to run in order to fulfill the query. If the query
@@ -20,11 +25,10 @@ module GraphQL
         # Second, the queries are executed.
         #
         # Third, the results of all the queries are merged in a result set that can be consumed by GraphQL.
-        queries = build_key_queries(query, tasks)
+        queries = build_key_queries(query, @scope)
         results = execute_queries(queries)
 
-        transformed = transform_results(results)
-        transformed
+        transform_results(results)
       end
 
       private
@@ -35,7 +39,7 @@ module GraphQL
         # the queries recursively.
         keys    = get_keys(groupings)
         queries = keys.each_with_object({}) do |key, object|
-          object[key] = Array.wrap(key).inject(base_query) { |query, current_key| get_grouping(current_key, query) }
+          object[key] = Array.wrap(key).inject(base_query) { |query, current_key| instance_exec(query, &@queries[current_key]) }
         end
         queries
       end
@@ -83,18 +87,6 @@ module GraphQL
           end
         end
         keys
-      end
-
-      def get_grouping(key, base_query)
-        case key
-        when :age
-          base_query.group(:age)
-        when :section_id
-          base_query.group(:section_id)
-        when :created_at
-          # TODO: Use CONVERT_TZ to use correct timezone
-          base_query.group("DATE_FORMAT(FROM_UNIXTIME(FLOOR(tasks.created_at / 1000)), '%Y-%m-%d')")
-        end
       end
 
       def transform_result(key, result)
