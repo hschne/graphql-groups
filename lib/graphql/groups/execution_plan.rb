@@ -8,6 +8,7 @@ module GraphQL
       def initialize(queries)
         @queries = queries
       end
+
       def fetch(key)
         @queries[key]
       end

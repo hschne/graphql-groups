@@ -4,6 +4,7 @@ class GroupField < GraphQL::Schema::Field
   end
 
   def own_query
+    name = self.name.to_sym
     @own_query ||= proc { |scope| scope.group(name) }
   end
 end

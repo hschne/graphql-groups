@@ -26,8 +26,8 @@ module GraphQL
         field name, type, extras: [:lookahead], null: false, **options
 
         define_method name do |lookahead: nil|
-          queries = ExecutionPlan.build(type, lookahead)
-          GraphQL::Groups::QueryExecutor.new.run(queries)
+          execution_plan = ExecutionPlan.build(type, lookahead)
+          GraphQL::Groups::QueryExecutor.new.run(execution_plan)
         end
       end
     end
