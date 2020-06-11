@@ -1,28 +1,70 @@
-# Graphql::Groups
+# GraphQL Groups
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/graphql/groups`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+Create flexible and performant aggregation queries with [graphql-ruby](https://github.com/rmosolgo/graphql-ruby)
 
 ## Installation
 
-Add this line to your application's Gemfile:
+Add this line to your application's Gemfile and execute bundler.
 
 ```ruby
 gem 'graphql-groups'
 ```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install graphql-groups
+```
+$ bundle install
+```
 
 ## Usage
 
-TODO: Write usage instructions here
+Create a new group type to specify which attributes you wish to group a model by.
+
+```
+class AuthorGroupType < GraphQL::Groups::GroupType
+  scope { Author.all }
+
+  by :age
+end
+```
+
+Include the new type in your schema using the `group` keyword. 
+
+```
+class QueryType < BaseType
+  include GraphQL::Groups
+
+  group :author_groups, AuthorGroupType
+```
+
+You can then run an aggregation query for this grouping. 
+
+```graphql
+query { 
+  authorGroups {
+    age {
+      key
+      count
+    }
+ }
+}
+```
+```json
+{
+  "authorGroups":{
+    "age":[
+      {
+        "key":"31",
+        "count":1
+      },
+      {
+        "key":"35",
+        "count":3
+      },
+      ...
+    ]
+  }
+}
+
+```
+
 
 ## Development
 
