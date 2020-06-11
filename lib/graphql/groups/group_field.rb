@@ -1,5 +1,5 @@
 class GroupField < GraphQL::Schema::Field
-  def query(*args, **kwargs, &block)
+  def with(*args, **kwargs, &block)
     @own_query = block
   end
 

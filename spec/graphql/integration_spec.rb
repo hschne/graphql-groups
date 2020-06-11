@@ -4,8 +4,27 @@ require 'spec_helper'
 
 RSpec.describe Graphql::Groups do
   describe 'using graphql' do
-    it 'should return data' do
-      Author.create(name: 'name', age: 1)
+    it 'with default query should return' do
+      Author.create(name: 'name', age: 30)
+
+      query = GQLi::DSL.query {
+        authorGroups {
+          name {
+            key
+            count
+          }
+        }
+      }.to_gql
+
+      result = GroupsSchema.execute(query)
+
+      group = result['data']['authorGroups']['name'][0]
+      expect(group['key']).to eq('name')
+      expect(group['count']).to eq(1)
+    end
+
+    it 'with custom query should return data' do
+      Author.create(name: 'name', age: 35)
 
       query = GQLi::DSL.query {
         authorGroups {
@@ -19,7 +38,7 @@ RSpec.describe Graphql::Groups do
       result = GroupsSchema.execute(query)
 
       group = result['data']['authorGroups']['age'][0]
-      expect(group['key']).to eq('1')
+      expect(group['key']).to eq('30-40')
       expect(group['count']).to eq(1)
     end
 

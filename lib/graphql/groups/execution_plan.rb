@@ -22,7 +22,7 @@ module GraphQL
             base_query    = instance_eval(&@own_scope)
             group_queries = own_fields
                               .delete_if { |_, value| !value.is_a?(GroupField) }
-                              .transform_values!(&:own_query)
+                              .transform_values(&:own_query)
                               .symbolize_keys
           end
           ExecutionPlan.new(build_key_queries(requested_data, base_query, group_queries))

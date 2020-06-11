@@ -7,7 +7,7 @@ class BookGroupType < GraphQL::Groups::GroupType
 
   by :published_at do
     argument :interval, String, required: false
-    query { |scope, args| published_group(scope, args) }
+    with { |scope, args| published_group(scope, args) }
   end
 
   private
