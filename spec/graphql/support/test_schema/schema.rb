@@ -20,8 +20,9 @@ end
 class CreateBooksTable < ActiveRecord::Migration[5.2]
   def change
     create_table :books do |table|
-      table.string :genre
       table.integer :author_id
+      table.string :genre
+      table.datetime :published_at
       table.timestamps
     end
   end

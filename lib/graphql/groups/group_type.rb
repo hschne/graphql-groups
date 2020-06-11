@@ -15,10 +15,6 @@ module GraphQL
 
       field_class(GroupField)
 
-      def self.inherited(base)
-        base.instance_variable_set '@config', {}
-      end
-
       class << self
         attr_reader :config
 
@@ -31,7 +27,7 @@ module GraphQL
         end
 
         def group_field(*args, **kwargs, &block)
-          field_defn = field_class.from_options(*args, owner: self, **kwargs, &block)
+          field_defn = GroupField.from_options(*args, owner: self, **kwargs, &block)
           add_field(field_defn)
           field_defn
         end
@@ -40,15 +36,8 @@ module GraphQL
           @own_scope = block
         end
 
-        def execute(lookahead)
-          # TODO: Merge into single nice structure
-          query   = GraphQL::Groups::LookaheadParser.parse(lookahead)
-          scope   = instance_eval(&@own_scope)
-          queries = own_fields
-                      .delete_if { |_, value| !value.is_a?(GroupField) }
-                      .transform_values!(&:own_query)
-                      .symbolize_keys
-          GraphQL::Groups::QueryExecutor.new.run(scope, query, queries)
+        def own_scope
+          @own_scope ||= nil
         end
 
         private

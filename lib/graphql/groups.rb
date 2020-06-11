@@ -25,7 +25,17 @@ module GraphQL
         field name, type, extras: [:lookahead], null: false, **options
 
         define_method name do |lookahead: nil|
-          type.execute(lookahead)
+          query   = GraphQL::Groups::LookaheadParser.parse(lookahead)
+          scope   = nil
+          queries = nil
+          type.instance_eval do
+            scope   = instance_eval(&@own_scope)
+            queries = own_fields
+                        .delete_if { |_, value| !value.is_a?(GroupField) }
+                        .transform_values!(&:own_query)
+                        .symbolize_keys
+          end
+          GraphQL::Groups::QueryExecutor.new.run(scope, query, queries)
         end
       end
     end

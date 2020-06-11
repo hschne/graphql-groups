@@ -6,7 +6,25 @@ RSpec.describe Graphql::Groups do
   describe 'using graphql' do
     it 'should return data' do
       Author.create(name: 'name', age: 1)
-      Author.create(name: 'name', age: 2)
+
+      query = GQLi::DSL.query {
+        authorGroups {
+          age {
+            key
+            count
+          }
+        }
+      }.to_gql
+
+      result = GroupsSchema.execute(query)
+
+      group = result['data']['authorGroups']['age'][0]
+      expect(group['key']).to eq('1')
+      expect(group['count']).to eq(1)
+    end
+
+    skip 'should support arguments data' do
+      Author.create(name: 'name', age: 1)
 
       query = GQLi::DSL.query {
         authorGroups {
