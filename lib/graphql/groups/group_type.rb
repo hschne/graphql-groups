@@ -3,6 +3,7 @@
 require 'graphql'
 
 require 'graphql/groups/group_field'
+require 'graphql/groups/group_result_type'
 
 module GraphQL
   module Groups
@@ -19,7 +20,7 @@ module GraphQL
         attr_reader :config
 
         def by(name, **options, &block)
-          group_field name, [result_type], null: false, **options, &block
+          group_field name, [own_result_type], null: false, **options, &block
 
           define_method name do
             group[name]
@@ -32,42 +33,26 @@ module GraphQL
           field_defn
         end
 
+        def result_type(result_type)
+          @own_result_type = result_type
+        end
+
         def scope(&block)
           @own_scope = block
         end
 
-        def own_scope
-          @own_scope ||= nil
-        end
-
         private
 
-        def result_type
-          name = "#{self.name}ResultType"
+        def own_result_type
+          name = "#{self.name.gsub(/Type$/, '')}ResultType"
 
-          @result_type ||= Class.new(GraphQL::Schema::Object) do
+          @result_type ||= Class.new(GraphQL::Groups::GroupResultType) do
             graphql_name name
-
-            alias_method :group_result, :object
-
-            field :key, String, null: false
-
-            field :count, Integer, null: false
-
-            field :group_by, self, null: false, camelize: true
-
-            def key
-              group_result[0]
-            end
-
-            def count
-              group_result[1][:count]
-            end
-
-            def group_by
-              group_result[1][:nested]
-            end
           end
+        end
+
+        def own_scope
+          @own_scope ||= nil
         end
       end
     end
