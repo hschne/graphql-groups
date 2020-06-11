@@ -2,50 +2,19 @@
 
 module GraphQL
   module Groups
-    # A query class used for fetching statistics for a collection of tasks. This is used by the GraphQL statistics query
     class QueryExecutor
-      def self.run(query, queries)
-        QueryExecutor.new.run(scope, query, queries)
-      end
 
-      attr_reader :scope, :query
-
-      # Collect receives an active record relation for tasks as well as a has that represents the statistics to collect.
-      # It returns a hash that can be consumed by GraphQL to provide a response. One of the main issues here is that
-      # GraphQL can construct arbitrary nested queries (e.g. grouping by section, created_at and updated_at).
-      def run(scope, query, queries)
-        @scope   = scope
-        @query   = query
-        @queries = queries
-        # Collecting the required data is a three step process.
-        #
-        # First, we construct all grouping queries that we will have to run in order to fulfill the query. If the query
-        # requires task count per section, as well as task count per section and creation day two group queries are created.
-        #
-        # Second, the queries are executed.
-        #
-        # Third, the results of all the queries are merged in a result set that can be consumed by GraphQL.
-        queries = build_key_queries(query, @scope)
-        results = execute_queries(queries)
+      def run(execution_plan)
+        @execution_plan = execution_plan
+        results         = execute_queries(execution_plan)
 
         transform_results(results)
       end
 
       private
 
-      def build_key_queries(groupings, base_query)
-        # We construct a hash of queries where the keys are the groups for which statistics need to be collected
-        # and the values grouping queries to execute later. Because there can be nested groups we need to construct
-        # the queries recursively.
-        keys    = get_keys(groupings)
-        queries = keys.each_with_object({}) do |key, object|
-          object[key] = Array.wrap(key).inject(base_query) { |query, current_key| instance_exec(query, &@queries[current_key]) }
-        end
-        queries
-      end
-
-      def execute_queries(queries)
-        queries.each_with_object({}) do |(key, value), object|
+      def execute_queries(execution_plan)
+        execution_plan.queries.each_with_object({}) do |(key, value), object|
           object[key] = value.size
         end
       end
@@ -61,32 +30,7 @@ module GraphQL
         # It all makes a lot more sense if you look at the GraphQL interface for statistics :)
         #
         # We accomplish this by transforming each result set to a hash and then merging them into a single one.
-        result = results.each_with_object({}) { |(key, value), object| object.deep_merge!(transform_result(key, value)) }
-        result
-      end
-
-      def get_keys(query)
-        # We construct a list of keys that we need to run group queries for. We also reuse these keys later to merge the
-        # query results into one big result. We only need to collect keys for groups for which we will have to collect
-        # statistics, i.e. if the aggregate key exists in the query.
-        #
-        # If there are nested queries with aggregates we recursively collect those as well and merge them into a single list
-        #
-        # === Example ===
-        #
-        #   [
-        #     [:section_id],
-        #     [:section_id, :created_at],
-        #     [:section_id, :updated_at]
-        #   ]
-        keys = query.keys.select { |key| query[key][:aggregate] }
-        query.select { |_, value| value[:nested] }
-          .each_with_object(keys) do |(key, value), object|
-          get_keys(value[:nested]).each do |item|
-            object << (Array.wrap(key) << item)
-          end
-        end
-        keys
+        results.each_with_object({}) { |(key, value), object| object.deep_merge!(transform_result(key, value)) }
       end
 
       def transform_result(key, result)
@@ -106,7 +50,7 @@ module GraphQL
         #      }
         #    }
         #  }
-        transformed_result = result.each_with_object({}) do |(keys, value), object|
+        result.each_with_object({}) do |(keys, value), object|
           key    = Array.wrap(key)
           keys   = Array.wrap(keys)
           nested = [:nested] * (key.length - 1)
@@ -122,7 +66,6 @@ module GraphQL
           hash        = with_zipped.reverse.inject(count: value) { |a, n| { n => a } }
           object.deep_merge!(hash)
         end
-        transformed_result
       end
     end
   end
