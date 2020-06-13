@@ -5,6 +5,8 @@ require 'graphql/groups'
 class AuthorGroupType < GraphQL::Groups::GroupType
   scope { Author.all }
 
+  result_type { AuthorGroupResultType }
+
   by :name
 
   by :age do

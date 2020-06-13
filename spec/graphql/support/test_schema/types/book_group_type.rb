@@ -15,11 +15,11 @@ class BookGroupType < GraphQL::Groups::GroupType
   def published_group(scope, args)
     case args[:interval]
     when 'month'
-      return scope.group_by_month
+      scope.group_by_month
     when 'week'
-      return scope.group_by_week
+      scope.group_by_week
     else
-      return scope.group_by_day
+      scope.group_by_day
     end
   end
 end

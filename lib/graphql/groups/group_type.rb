@@ -33,8 +33,8 @@ module GraphQL
           field_defn
         end
 
-        def result_type(result_type)
-          @own_result_type = result_type
+        def result_type(&block)
+          @own_result_type = block
         end
 
         def scope(&block)

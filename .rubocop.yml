@@ -2,4 +2,4 @@ Layout/LineLength:
   Max: 120
 
 Layout/MultilineMethodCallIndentation:
-  EnforcedStyle: indent
+  EnforcedStyle: indented

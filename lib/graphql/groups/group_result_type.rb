@@ -2,32 +2,15 @@
 
 require 'graphql'
 
-require 'graphql/groups/group_field'
 
 module GraphQL
   module Groups
     class GroupResultType < GraphQL::Schema::Object
       alias group_result object
 
-      class << self
-        def define_aggregate(name, **options, &block)
-          field :key, String, null: false, **options, &block
-
-          define_method name do
-            group_result[1][:name]
-          end
-        end
-      end
-
       field :key, String, null: false
 
       field :count, Integer, null: false
-
-      field :avg, Integer, null: false
-
-      field :min, Integer, null: false
-
-      field :max, Integer, null: false
 
       field :group_by, self, null: false, camelize: true
 
@@ -39,24 +22,48 @@ module GraphQL
         group_result[1][:count]
       end
 
-      def avg
-        group_result[1][:avg]
-      end
-
-      def min
-        group_result[1][:min]
-      end
-
-      def max
-        group_result[1][:max]
-      end
-
-      def sum
-        group_result[1][:sum]
-      end
-
       def group_by
         group_result[1][:nested]
+      end
+
+      class << self
+        def aggregate(name, *fields, **options, &block)
+          name = "#{name}AggregateType"
+
+          aggregate_type = aggregate_type(fields, name)
+
+          aggregate_field name, aggregate_type, null: false, **options, &block
+
+          define_method name do
+            group_result[1][name]
+          end
+        end
+
+        def aggregate_field(*args, **kwargs, &block)
+          field_defn = AggregateField.from_options(*args, owner: self, **kwargs, &block)
+          add_field(field_defn)
+          field_defn
+        end
+
+        def own_aggregate_types
+          @own_aggregate_types ||= {}
+        end
+
+        private
+
+        def aggregate_type(fields, name)
+          own_aggregate_types[name] ||= Class.new(GraphQL::Groups::AggregateType) do
+            graphql_name name
+
+            fields.each do |field_name|
+              field field_name, Integer, null: false
+
+              define_method field_name do
+                aggregate[field_name]
+              end
+            end
+          end
+        end
       end
     end
   end

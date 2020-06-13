@@ -42,12 +42,36 @@ RSpec.describe Graphql::Groups do
       expect(group['count']).to eq(1)
     end
 
-    skip 'should support arguments data' do
-      Author.create(name: 'name', age: 1)
+    skip 'with average should return data' do
+      author = Author.create(name: 'name')
+      Book.create(author: author, published_at: Time.zone.parse('2020-01-01'))
 
       query = GQLi::DSL.query {
-        authorGroups {
-          age {
+        bookGroups {
+          publishedAt(interval: 'day') {
+            key
+            average {
+              listPrice
+            }
+          }
+        }
+      }.to_gql
+
+      result = GroupsSchema.execute(query)
+
+      group = result['data']['bookGroups']['age'][0]
+      expect(group['key']).to eq('1')
+      expect(group['average']['listPrice']).to eq(1)
+    end
+
+
+    skip 'should support arguments data' do
+      author = Author.create(name: 'name')
+      Book.create(author: author, published_at: Time.zone.parse('2020-01-01'))
+
+      query = GQLi::DSL.query {
+        bookGroups {
+          publishedAt(interval: 'day') {
             key
             count
           }
@@ -56,7 +80,7 @@ RSpec.describe Graphql::Groups do
 
       result = GroupsSchema.execute(query)
 
-      group = result['data']['authorGroups']['age'][0]
+      group = result['data']['bookGroups']['age'][0]
       expect(group['key']).to eq('1')
       expect(group['count']).to eq(1)
     end

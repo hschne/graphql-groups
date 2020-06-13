@@ -6,17 +6,15 @@ require 'graphql/groups/execution_plan'
 require 'graphql/groups/lookahead_parser'
 
 require 'graphql/groups/group_type'
+require 'graphql/groups/aggregate_field'
+require 'graphql/groups/aggregate_type'
+
+require 'graphql/groups/extensions/wrap'
 
 module GraphQL
   module Groups
     def self.included(base)
       base.extend ClassMethods
-      base.instance_eval do
-        @config = {
-          defaults: {},
-          options:  {}
-        }
-      end
     end
 
     module ClassMethods
