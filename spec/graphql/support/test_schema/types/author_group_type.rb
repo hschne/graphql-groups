@@ -3,7 +3,7 @@
 require 'graphql/groups'
 require_relative 'author_group_result_type'
 
-class AuthorGroupType < GraphQL::Groups::GroupType
+class AuthorGroupType < GraphQL::Groups::Schema::GroupType
   scope { Author.all }
 
   result_type { AuthorGroupResultType }

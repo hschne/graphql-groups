@@ -2,7 +2,7 @@
 
 require 'graphql/groups'
 
-class BookGroupType < GraphQL::Groups::GroupType
+class BookGroupType < GraphQL::Groups::Schema::GroupType
   scope { Book.all }
 
   by :published_at do

@@ -21,7 +21,7 @@ module GraphQL
           group_type.instance_eval do
             base_query    = instance_eval(&@own_scope)
             group_queries = own_fields
-                              .delete_if { |_, value| !value.is_a?(GroupField) }
+                              .delete_if { |_, value| !value.is_a?(Schema::GroupField) }
                               .transform_values(&:own_query)
                               .symbolize_keys
           end

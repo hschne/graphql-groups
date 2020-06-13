@@ -1,15 +1,22 @@
 # frozen_string_literal: true
 
 require 'graphql/groups/version'
+
+
+require 'graphql'
+
+require 'graphql/groups/extensions/wrap'
+
+require 'graphql/groups/schema/group_field'
+require 'graphql/groups/schema/group_result_type'
+require 'graphql/groups/schema/aggregate_field'
+require 'graphql/groups/schema/aggregate_type'
+require 'graphql/groups/schema/group_type'
+
 require 'graphql/groups/query_executor'
 require 'graphql/groups/execution_plan'
 require 'graphql/groups/lookahead_parser'
 
-require 'graphql/groups/group_type'
-require 'graphql/groups/aggregate_field'
-require 'graphql/groups/aggregate_type'
-
-require 'graphql/groups/extensions/wrap'
 
 module GraphQL
   module Groups
