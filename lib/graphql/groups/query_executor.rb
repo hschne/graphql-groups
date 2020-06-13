@@ -3,7 +3,6 @@
 module GraphQL
   module Groups
     class QueryExecutor
-
       def run(execution_plan)
         @execution_plan = execution_plan
         results         = execute_queries(execution_plan)
@@ -15,7 +14,7 @@ module GraphQL
 
       def execute_queries(execution_plan)
         execution_plan.queries.each_with_object({}) do |(key, value), object|
-          object[key] = value.call
+          object[key] = instance_eval(value)
         end
       end
 

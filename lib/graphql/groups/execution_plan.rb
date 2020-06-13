@@ -16,16 +16,8 @@ module GraphQL
       class << self
         def build(group_type, lookahead)
           requested_data = GraphQL::Groups::LookaheadParser.parse(lookahead)
-          base_query     = nil
-          group_queries  = nil
-          group_type.instance_eval do
-            base_query    = instance_eval(&@own_scope)
-            group_queries = own_fields
-                              .delete_if { |_, value| !value.is_a?(Schema::GroupField) }
-                              .transform_values(&:own_query)
-                              .symbolize_keys
-          end
-          ExecutionPlan.new(build_key_queries(requested_data, base_query, group_queries))
+          parser = TypeParser.parse(group_type)
+          ExecutionPlan.new(build_key_queries(requested_data, parser.base_query, parser.group_queries))
         end
 
         private

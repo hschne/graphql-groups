@@ -16,9 +16,10 @@ require 'graphql/groups/aggregates'
 require 'graphql/groups/schema/group_result_type'
 require 'graphql/groups/schema/group_type'
 
+require 'graphql/groups/lookahead_parser'
+require 'graphql/groups/type_parser'
 require 'graphql/groups/query_executor'
 require 'graphql/groups/execution_plan'
-require 'graphql/groups/lookahead_parser'
 
 
 module GraphQL

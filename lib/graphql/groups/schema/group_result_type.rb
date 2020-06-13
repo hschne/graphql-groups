@@ -17,7 +17,7 @@ module GraphQL
         field :group_by, self, null: false, camelize: true
 
         aggregate_field :count, Integer, null: false do
-          with(&:size)
+          with { |scope, _| scope.size }
         end
 
         def key
