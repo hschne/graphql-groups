@@ -7,6 +7,9 @@ module GraphQL
   module Groups
     class GroupResultType < GraphQL::Schema::Object
       alias group_result object
+      def initialize(object, context)
+        super(object, context)
+      end
 
       field :key, String, null: false
 
@@ -28,11 +31,10 @@ module GraphQL
 
       class << self
         def aggregate(name, *fields, **options, &block)
-          name = "#{name}AggregateType"
+          aggregate_type = aggregate_type(name)
 
-          aggregate_type = aggregate_type(fields, name)
-
-          aggregate_field name, aggregate_type, null: false, **options, &block
+          field = aggregate_field name, aggregate_type, null: false, **options, &block
+          aggregate_type.add_fields(field.own_attributes)
 
           define_method name do
             group_result[1][name]
@@ -51,17 +53,10 @@ module GraphQL
 
         private
 
-        def aggregate_type(fields, name)
+        def aggregate_type(name)
+          name = "#{name}AggregateType".upcase_first
           own_aggregate_types[name] ||= Class.new(GraphQL::Groups::AggregateType) do
             graphql_name name
-
-            fields.each do |field_name|
-              field field_name, Integer, null: false
-
-              define_method field_name do
-                aggregate[field_name]
-              end
-            end
           end
         end
       end

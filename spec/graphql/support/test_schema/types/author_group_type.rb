@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'graphql/groups'
+require_relative 'author_group_result_type'
 
 class AuthorGroupType < GraphQL::Groups::GroupType
   scope { Author.all }

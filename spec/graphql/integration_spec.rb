@@ -42,16 +42,16 @@ RSpec.describe Graphql::Groups do
       expect(group['count']).to eq(1)
     end
 
-    skip 'with average should return data' do
-      author = Author.create(name: 'name')
-      Book.create(author: author, published_at: Time.zone.parse('2020-01-01'))
+    it 'with average should return data' do
+      Author.create(name: 'name', age: 5)
+      Author.create(name: 'name', age: 10)
 
       query = GQLi::DSL.query {
-        bookGroups {
-          publishedAt(interval: 'day') {
+        authorGroups {
+          name {
             key
             average {
-              listPrice
+              age
             }
           }
         }
@@ -59,9 +59,9 @@ RSpec.describe Graphql::Groups do
 
       result = GroupsSchema.execute(query)
 
-      group = result['data']['bookGroups']['age'][0]
-      expect(group['key']).to eq('1')
-      expect(group['average']['listPrice']).to eq(1)
+      group = result['data']['authorGroups']['name']['0']
+      expect(group['key']).to eq('name')
+      expect(group['average']['age']).to eq(1)
     end
 
 

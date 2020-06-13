@@ -17,8 +17,6 @@ module GraphQL
       field_class(GroupField)
 
       class << self
-        attr_reader :config
-
         def by(name, **options, &block)
           group_field name, [own_result_type], null: false, **options, &block
 
@@ -34,7 +32,7 @@ module GraphQL
         end
 
         def result_type(&block)
-          @own_result_type = block
+          @own_result_type = instance_eval(&block)
         end
 
         def scope(&block)
@@ -46,7 +44,7 @@ module GraphQL
         def own_result_type
           name = "#{self.name.gsub(/Type$/, '')}ResultType"
 
-          @result_type ||= Class.new(GraphQL::Groups::GroupResultType) do
+          @own_result_type ||= Class.new(GraphQL::Groups::GroupResultType) do
             graphql_name name
           end
         end
