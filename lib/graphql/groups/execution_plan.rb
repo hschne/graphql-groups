@@ -30,11 +30,11 @@ module GraphQL
 
         private
 
-        def build_key_queries(groupings, base_query, queries)
+        def build_key_queries(requested_data, base_query, queries)
           # We construct a hash of queries where the keys are the groups for which statistics need to be collected
           # and the values grouping queries to execute later. Because there can be nested groups we need to construct
           # the queries recursively.
-          keys = get_keys(groupings)
+          keys = get_keys(requested_data)
           keys.each_with_object({}) do |key, object|
             object[key] = Array.wrap(key).inject(base_query) { |query, current_key| instance_exec(query, &queries[current_key]) }
           end

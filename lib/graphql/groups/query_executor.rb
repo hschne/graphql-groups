@@ -15,7 +15,7 @@ module GraphQL
 
       def execute_queries(execution_plan)
         execution_plan.queries.each_with_object({}) do |(key, value), object|
-          object[key] = value.size
+          object[key] = value.call
         end
       end
 
