@@ -14,7 +14,7 @@ module GraphQL
 
       def execute_queries(execution_plan)
         execution_plan.queries.each_with_object({}) do |(key, value), object|
-          object[key] = instance_eval(value)
+          object[key] = value.size
         end
       end
 
