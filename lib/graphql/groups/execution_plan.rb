@@ -20,10 +20,32 @@ module GraphQL
             base_query = instance_eval(&@own_scope)
           end
           requested_data = GraphQL::Groups::LookaheadParser.parse(lookahead)
-          ExecutionPlan.new(build_key_queries(base_query, requested_data))
+          requested_data.each_with_object({}) do |(key, value), object|
+            object.merge!(resolve(base_query, [], key, value))
+          end
         end
 
-        private
+        def resolve(scope, base_key, key, value)
+          group_query = instance_exec(scope, &value[:proc])
+          results = value[:aggregates].each_with_object({}) do |(aggregate_key, aggregate), object|
+            if aggregate_key == :count
+              object[:count] = instance_exec(group_query, aggregate, &aggregate[:proc])
+            else
+              object[aggregate_key] ||= {}
+              aggregate[:attributes].each do |attribute|
+                result = instance_exec(group_query, attribute, &aggregate[:proc])
+                object[aggregate_key][attribute] = result
+              end
+            end
+          end
+          new_key = (base_key << key)
+          result = { new_key => results }
+          return result unless value[:nested]
+
+          value[:nested].each do |key, value|
+            result.merge!(resolve(group_query, new_key, key, value))
+          end
+        end
 
         def build_key_queries(base_query, requested_data)
           # We construct a hash of queries where the keys are the groups for which statistics need to be collected

@@ -3,11 +3,9 @@
 module GraphQL
   module Groups
     class QueryExecutor
-      def run(execution_plan)
-        @execution_plan = execution_plan
-        results         = execute_queries(execution_plan)
-
-        transform_results(results)
+      def run(results)
+        transformed = transform_results(results)
+        return transformed
       end
 
       private
@@ -62,7 +60,7 @@ module GraphQL
           #
           # See https://stackoverflow.com/a/5095149/2553104
           with_zipped = key.zip(keys).zip(nested).flatten!.compact
-          hash        = with_zipped.reverse.inject(count: value) { |a, n| { n => a } }
+          hash        = with_zipped.reverse.inject(value) { |a, n| { n => a } }
           object.deep_merge!(hash)
         end
       end
