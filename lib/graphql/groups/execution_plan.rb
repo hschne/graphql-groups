@@ -15,14 +15,17 @@ module GraphQL
 
       class << self
         def build(group_type, lookahead)
+          base_query = nil
+          group_type.instance_eval do
+            base_query = instance_eval(&@own_scope)
+          end
           requested_data = GraphQL::Groups::LookaheadParser.parse(lookahead)
-          parser = TypeParser.parse(group_type)
-          ExecutionPlan.new(build_key_queries(requested_data, parser.base_query, parser.group_queries))
+          ExecutionPlan.new(build_key_queries(base_query, requested_data))
         end
 
         private
 
-        def build_key_queries(requested_data, base_query, queries)
+        def build_key_queries(base_query, requested_data)
           # We construct a hash of queries where the keys are the groups for which statistics need to be collected
           # and the values grouping queries to execute later. Because there can be nested groups we need to construct
           # the queries recursively.
@@ -46,7 +49,7 @@ module GraphQL
           #     [:section_id, :created_at],
           #     [:section_id, :updated_at]
           #   ]
-          keys = query.keys.select { |key| query[key][:aggregate] }
+          keys = query.keys.select { |key| query[key][:aggregates] }
           query.select { |_, value| value[:nested] }
             .each_with_object(keys) do |(key, value), object|
             get_keys(value[:nested]).each do |item|

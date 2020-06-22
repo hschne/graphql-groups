@@ -24,10 +24,6 @@ require 'graphql/groups/execution_plan'
 
 module GraphQL
   module Groups
-    # def self.use(schema_defn, executor_class: GraphQL::Groups::Executor)
-    #   schema_defn.lazy_resolve(GraphQL::Groups::GroupLoader, :load)
-    # end
-
     def self.included(base)
       base.extend ClassMethods
     end
@@ -39,7 +35,7 @@ module GraphQL
         field name, type, extras: [:lookahead], null: false, **options
 
         define_method name do |lookahead: nil|
-          execution_plan = ExecutionPlan.build(type, lookahead)
+         execution_plan = ExecutionPlan.build(type, lookahead)
           GraphQL::Groups::QueryExecutor.new.run(execution_plan)
         end
       end
