@@ -24,10 +24,11 @@ module GraphQL
         aggregate_selections = group_selection.selections.select { |selection| selection.field.is_a?(GraphQL::Groups::Schema::AggregateField) }
         aggregate_selections.each_with_object({}) do |selection, object|
           name = selection.name
+          field = selection.field
           if name == :count
-            object[name] = { proc: selection.field.own_query }
-          elsif selection.own_attributes.present?
-            object[name] = { proc: selection.field.own_query, attributes: selection.own_attributes }
+            object[name] = { proc: field.own_query }
+          elsif selection.field.own_attributes.present?
+            object[name] = { proc: field.own_query, attributes: field.own_attributes }
           end
         end
       end

@@ -10,12 +10,6 @@ module GraphQL
 
       private
 
-      def execute_queries(execution_plan)
-        execution_plan.queries.each_with_object({}) do |(key, value), object|
-          object[key] = value.size
-        end
-      end
-
       def transform_results(results)
         # Because group query returns its results in a way that is not usable by GraphQL we need to transform these results
         # and merge them into a single dataset.
@@ -32,7 +26,11 @@ module GraphQL
 
       def transform_result(key, result)
         result.each_with_object({}) do |(aggregate_key, value), object|
-          object.deep_merge!(transform_aggregate(key, aggregate_key, value))
+          if value.values.any? { |x| x.is_a?(Hash)}
+            value.each { |attribute, value| object.deep_merge!(transform_attribute(key, aggregate_key, attribute, value)) }
+          else
+            object.deep_merge!(transform_aggregate(key, aggregate_key, value))
+          end
         end
       end
 
@@ -45,6 +43,20 @@ module GraphQL
           # See https://stackoverflow.com/a/5095149/2553104
           with_zipped = key.zip(keys).zip(nested).flatten!.compact
           with_zipped.append(aggregate)
+          hash = with_zipped.reverse.inject(value) { |a, n| { n => a } }
+          object.deep_merge!(hash)
+        end
+      end
+
+      def transform_attribute(key, aggregate, attribute, result)
+        result.each_with_object({}) do |(keys, value), object|
+          key = Array.wrap(key)
+          keys = Array.wrap(keys)
+          nested = [:nested] * (key.length - 1)
+
+          with_zipped = key.zip(keys).zip(nested).flatten!.compact
+          with_zipped.append(aggregate)
+          with_zipped.append(attribute)
           hash = with_zipped.reverse.inject(value) { |a, n| { n => a } }
           object.deep_merge!(hash)
         end

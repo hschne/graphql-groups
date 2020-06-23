@@ -59,9 +59,9 @@ RSpec.describe Graphql::Groups do
 
       result = GroupsSchema.execute(query)
 
-      group = result['data']['authorGroups']['name']['0']
+      group = result['data']['authorGroups']['name'][0]
       expect(group['key']).to eq('name')
-      expect(group['average']['age']).to eq(1)
+      expect(group['average']['age']).to eq(7.5)
     end
 
 
