@@ -21,11 +21,11 @@ module GraphQL
           end
           requested_data = GraphQL::Groups::LookaheadParser.parse(lookahead)
           requested_data.each_with_object({}) do |(key, value), object|
-            object.merge!(resolve(base_query, [], key, value))
+            object.merge!(resolve(base_query, key, value))
           end
         end
 
-        def resolve(scope, base_key, key, value)
+        def resolve(scope, key, value)
           group_query = instance_exec(scope, &value[:proc])
           results = value[:aggregates].each_with_object({}) do |(aggregate_key, aggregate), object|
             if aggregate_key == :count
@@ -38,13 +38,15 @@ module GraphQL
               end
             end
           end
-          new_key = (base_key << key)
-          result = { new_key => results }
-          return result unless value[:nested]
 
-          value[:nested].each do |key, value|
-            result.merge!(resolve(group_query, new_key, key, value))
+          return { key => results} unless value[:nested]
+
+          value[:nested].each do |inner_key, inner_value|
+            new_key = (Array.wrap(key) << inner_key)
+            inner_result = resolve(group_query, inner_key, inner_value)
+            results[new_key]= inner_result[inner_key]
           end
+          results
         end
 
         def build_key_queries(base_query, requested_data)

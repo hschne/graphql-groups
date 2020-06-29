@@ -2,7 +2,6 @@
 
 require 'graphql'
 
-
 module GraphQL
   module Groups
     module Schema
@@ -43,8 +42,18 @@ module GraphQL
           def own_result_type
             name = "#{self.name.gsub(/Type$/, '')}ResultType"
 
-            @own_result_type ||= Class.new(GraphQL::Groups::Schema::GroupResultType) do
+            type = name.safe_constantize || GraphQL::Groups::Schema::GroupResultType
+            own_group_type = self
+
+            @classes ||= {}
+            @classes[type] ||= Class.new(type) do
               graphql_name name
+
+              field :group_by, own_group_type , null: false, camelize: true
+
+              def group_by
+                group_result[1][:nested]
+              end
             end
           end
 

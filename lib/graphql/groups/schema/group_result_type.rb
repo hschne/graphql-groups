@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'graphql'
+require 'graphql/groups/schema/group_type'
 
 module GraphQL
   module Groups
@@ -14,7 +15,6 @@ module GraphQL
 
         field :count, Integer, null: false
 
-        field :group_by, self, null: false, camelize: true
 
         aggregate_field :count, Integer, null: false do
           with { |scope, _| scope.size }
@@ -28,8 +28,10 @@ module GraphQL
           group_result[1][:count]
         end
 
-        def group_by
-          group_result[1][:nested]
+        private
+
+        def inner_result_type
+          @inner_result_type ||= self
         end
       end
     end

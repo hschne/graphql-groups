@@ -42,6 +42,29 @@ RSpec.describe Graphql::Groups do
       expect(group['count']).to eq(1)
     end
 
+    it 'with nested query should return' do
+      Author.create(name: 'name', age: 30)
+
+      query = GQLi::DSL.query {
+        authorGroups {
+          name {
+            groupBy {
+              age {
+                key
+                count
+              }
+            }
+          }
+        }
+      }.to_gql
+
+      result = GroupsSchema.execute(query)
+
+      group = result['data']['authorGroups']['name'][0]['groupBy']['age'][0]
+      expect(group['key']).to eq('30-40')
+      expect(group['count']).to eq(1)
+    end
+
     it 'with average should return data' do
       Author.create(name: 'name', age: 5)
       Author.create(name: 'name', age: 10)
@@ -65,7 +88,7 @@ RSpec.describe Graphql::Groups do
     end
 
 
-    skip 'should support arguments data' do
+    it 'should support arguments data' do
       author = Author.create(name: 'name')
       Book.create(author: author, published_at: Time.zone.parse('2020-01-01'))
 
