@@ -4,8 +4,7 @@ module GraphQL
   module Groups
     class QueryExecutor
       def run(results)
-        transformed = transform_results(results)
-        return transformed
+        transform_results(results)
       end
 
       private

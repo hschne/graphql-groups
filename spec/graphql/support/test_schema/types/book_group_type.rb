@@ -7,19 +7,18 @@ class BookGroupType < GraphQL::Groups::Schema::GroupType
 
   by :published_at do
     argument :interval, String, required: false
-    with { |scope, args| published_group(scope, args) }
   end
 
   private
 
-  def published_group(scope, args)
-    case args[:interval]
+  def published_at(scope:, interval:)
+    case interval
     when 'month'
-      scope.group_by_month
-    when 'week'
-      scope.group_by_week
+      scope.group("strftime('%Y-%m-01 00:00:00 UTC', published_at)")
+    when 'year'
+      scope.group("strftime('%Y-01-01 00:00:00 UTC', published_at)")
     else
-      scope.group_by_day
+      scope.group("strftime('%Y-%m-%d 00:00:00 UTC', published_at)")
     end
   end
 end

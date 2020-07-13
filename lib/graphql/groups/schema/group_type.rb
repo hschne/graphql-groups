@@ -16,9 +16,19 @@ module GraphQL
 
         class << self
           def by(name, **options, &block)
-            group_field name, [own_result_type], null: false, **options, &block
+            query_method = options[:resolve_method] || name
+            resolver_method = "resolve_#{query_method}".to_sym
+            group_field name, [own_result_type],
+                        null: false,
+                        resolver_method: resolver_method,
+                        query_method: query_method,
+                        **options, &block
 
-            define_method name do
+            define_method query_method do |**kwargs|
+              kwargs[:scope].group(name)
+            end
+
+            define_method resolver_method do |**kwargs|
               group[name]
             end
           end
@@ -49,7 +59,7 @@ module GraphQL
             @classes[type] ||= Class.new(type) do
               graphql_name name
 
-              field :group_by, own_group_type , null: false, camelize: true
+              field :group_by, own_group_type, null: false, camelize: true
 
               def group_by
                 group_result[1][:nested]

@@ -10,7 +10,7 @@ module GraphQL
         selections = root.selections
         group_selections = selections.select { |selection| selection.field.is_a?(GraphQL::Groups::Schema::GroupField) }
         group_selections.each do |selection|
-          own_query = selection.field.own_query
+          own_query = get_field_proc(selection.field, selection.arguments)
           hash[selection.name] ||= { proc: own_query }
           hash[selection.name][:aggregates] = aggregates(selection)
         end
@@ -18,6 +18,10 @@ module GraphQL
           .filter { |selection| selection.selects?(:group_by) }
           .each { |selection| hash[selection.name][:nested] = group_selections(selection.selection(:group_by), {}) }
         hash
+      end
+
+      def get_field_proc(field, arguments)
+        proc { |**kwargs| field.owner.send(:new, {}, nil).send(field.query_method, **arguments, **kwargs) }
       end
 
       def aggregates(group_selection)

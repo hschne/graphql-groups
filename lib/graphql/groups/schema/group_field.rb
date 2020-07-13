@@ -4,8 +4,12 @@ module GraphQL
   module Groups
     module Schema
       class GroupField < GraphQL::Schema::Field
-        def with(*args, **kwargs, &block)
-          @own_query = block
+
+        attr_reader :query_method
+
+        def initialize(query_method:, **options, &definition_block)
+          @query_method = query_method
+          super(**options, &definition_block)
         end
 
         def own_query

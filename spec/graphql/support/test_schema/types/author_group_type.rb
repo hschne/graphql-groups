@@ -10,7 +10,9 @@ class AuthorGroupType < GraphQL::Groups::Schema::GroupType
 
   by :name
 
-  by :age do
-    with { |scope| scope.group("(cast(age/10 as int) * 10) || '-' || ((cast(age/10 as int) + 1) * 10)")}
+  by :age
+
+  def age(scope:)
+    scope.group("(cast(age/10 as int) * 10) || '-' || ((cast(age/10 as int) + 1) * 10)")
   end
 end

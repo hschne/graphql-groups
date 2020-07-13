@@ -26,7 +26,7 @@ module GraphQL
         end
 
         def resolve(scope, key, value)
-          group_query = instance_exec(scope, &value[:proc])
+          group_query = instance_exec(scope: scope, &value[:proc])
           results = value[:aggregates].each_with_object({}) do |(aggregate_key, aggregate), object|
             if aggregate_key == :count
               object[:count] = instance_exec(group_query, aggregate, &aggregate[:proc])

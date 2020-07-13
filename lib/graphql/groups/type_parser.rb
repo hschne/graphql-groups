@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+
+# TODO: REMOVE no longer needed
 module GraphQL
   module Groups
     class TypeParser
@@ -12,15 +14,13 @@ module GraphQL
 
       class << self
         def parse(base_type)
-          base_query    = nil
-          group_fields  = nil
+          base_query = nil
+          group_fields = nil
           group_queries = nil
           base_type.instance_eval do
-            base_query    = instance_eval(&@own_scope)
-            group_fields        = own_fields.delete_if { |_, value| !value.is_a?(Schema::GroupField) }
-            group_queries = group_fields
-                              .transform_values(&:own_query)
-                              .symbolize_keys
+            base_query = instance_eval(&@own_scope)
+            group_fields = own_fields.delete_if { |_, value| !value.is_a?(Schema::GroupField) }
+            group_queries = group_fields.transform_values(&:own_query).symbolize_keys
           end
 
           aggregate_fields = []
