@@ -16,7 +16,7 @@ module GraphQL
 
         class << self
           def by(name, **options, &block)
-            query_method = options[:resolve_method] || name
+            query_method = options[:query_method] || name
             resolver_method = "resolve_#{query_method}".to_sym
             group_field name, [own_result_type],
                         null: false,

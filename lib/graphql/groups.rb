@@ -2,9 +2,7 @@
 
 require 'graphql/groups/version'
 
-
 require 'graphql'
-
 require 'graphql/groups/extensions/wrap'
 
 require 'graphql/groups/schema/group_field'
@@ -17,7 +15,6 @@ require 'graphql/groups/schema/group_result_type'
 require 'graphql/groups/schema/group_type'
 
 require 'graphql/groups/lookahead_parser'
-require 'graphql/groups/type_parser'
 require 'graphql/groups/query_executor'
 require 'graphql/groups/execution_plan'
 

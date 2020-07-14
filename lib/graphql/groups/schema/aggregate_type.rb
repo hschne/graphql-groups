@@ -11,9 +11,10 @@ module GraphQL
         class << self
           def add_fields(fields)
             fields.each do |attribute|
-              field attribute, Float, null: false
+              resolve_method = "resolve_#{attribute}".to_sym
+              field attribute, Float, null: false, resolver_method: resolve_method
 
-              define_method attribute do
+              define_method resolve_method do
                 object[attribute]
               end
             end

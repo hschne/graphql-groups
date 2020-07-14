@@ -30,11 +30,16 @@ module GraphQL
           name = selection.name
           field = selection.field
           if name == :count
-            object[name] = { proc: field.own_query }
+            proc = proc { |**kwargs| field.owner.send(:new, {}, nil).send(field.query_method, **kwargs) }
+            object[name] = { proc: proc }
           elsif selection.field.own_attributes.present?
-            object[name] = { proc: field.own_query, attributes: field.own_attributes }
+            object[name] = { proc: get_aggregate_proc(field, selection.arguments), attributes: field.own_attributes }
           end
         end
+      end
+
+      def get_aggregate_proc(field, arguments)
+        proc { |**kwargs| field.owner.send(:new, {}, nil).send(field.query_method, **kwargs, **arguments) }
       end
     end
   end

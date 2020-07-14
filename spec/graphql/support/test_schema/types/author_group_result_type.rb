@@ -5,6 +5,9 @@ require 'graphql/groups'
 class AuthorGroupResultType < GraphQL::Groups::Schema::GroupResultType
   aggregate :average do
     attribute :age
-    with { |scope, attribute| scope.average(attribute) }
+  end
+
+  def average(scope:, attribute:)
+    scope.average(attribute)
   end
 end

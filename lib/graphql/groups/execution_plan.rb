@@ -29,11 +29,11 @@ module GraphQL
           group_query = instance_exec(scope: scope, &value[:proc])
           results = value[:aggregates].each_with_object({}) do |(aggregate_key, aggregate), object|
             if aggregate_key == :count
-              object[:count] = instance_exec(group_query, aggregate, &aggregate[:proc])
+              object[:count] = instance_exec(scope: group_query, &aggregate[:proc])
             else
               object[aggregate_key] ||= {}
               aggregate[:attributes].each do |attribute|
-                result = instance_exec(group_query, attribute, &aggregate[:proc])
+                result = aggregate[:proc].call(scope: group_query, attribute: attribute)
                 object[aggregate_key][attribute] = result
               end
             end

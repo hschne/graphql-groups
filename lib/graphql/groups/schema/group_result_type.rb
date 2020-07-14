@@ -15,16 +15,17 @@ module GraphQL
 
         field :count, Integer, null: false
 
-
-        aggregate_field :count, Integer, null: false do
-          with { |scope, _| scope.size }
-        end
+        aggregate_field :count, Integer, null: false, query_method: :count, resolver_method: :resolve_count
 
         def key
           group_result[0]
         end
 
-        def count
+        def count(scope:, **_)
+          scope.size
+        end
+
+        def resolve_count
           group_result[1][:count]
         end
 
