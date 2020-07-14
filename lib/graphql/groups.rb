@@ -16,8 +16,8 @@ require 'graphql/groups/schema/group_result_type'
 require 'graphql/groups/schema/group_type'
 
 require 'graphql/groups/lookahead_parser'
-require 'graphql/groups/query_executor'
-require 'graphql/groups/execution_plan'
+require 'graphql/groups/result_transformer'
+require 'graphql/groups/executor'
 
 
 module GraphQL
@@ -27,14 +27,18 @@ module GraphQL
     end
 
     module ClassMethods
-      KEYS = %i[type default description required camelize].freeze
-
       def group(name, type, **options)
+        # TODO: Suppress/warn if options are used that cannot be used
         field name, type, extras: [:lookahead], null: false, **options
 
         define_method name do |lookahead: nil|
-          results = ExecutionPlan.build(type, lookahead)
-          GraphQL::Groups::QueryExecutor.new.run(results)
+          execution_plan = GraphQL::Groups::LookaheadParser.parse(lookahead)
+          base_query = nil
+          type.instance_eval do
+            base_query = instance_eval(&@own_scope)
+          end
+          results = Executor.call(base_query, execution_plan)
+          GraphQL::Groups::ResultTransformer.new.run(results)
         end
       end
     end

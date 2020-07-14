@@ -2,7 +2,7 @@
 
 module GraphQL
   module Groups
-    class QueryExecutor
+    class ResultTransformer
       def run(results)
         transform_results(results)
       end
@@ -25,7 +25,7 @@ module GraphQL
 
       def transform_result(key, result)
         result.each_with_object({}) do |(aggregate_key, value), object|
-          if value.values.any? { |x| x.is_a?(Hash)}
+          if value.values.any? { |x| x.is_a?(Hash) }
             value.each { |attribute, value| object.deep_merge!(transform_attribute(key, aggregate_key, attribute, value)) }
           else
             object.deep_merge!(transform_aggregate(key, aggregate_key, value))
@@ -33,10 +33,11 @@ module GraphQL
         end
       end
 
+      # TODO: Merge transform aggregate and transform attribute
       def transform_aggregate(key, aggregate, result)
         result.each_with_object({}) do |(keys, value), object|
           key = Array.wrap(key)
-          keys = Array.wrap(keys)
+          keys = keys ? Array.wrap(keys).map { |x| x || 'null' } : ['null']
           nested = [:nested] * (key.length - 1)
 
           # See https://stackoverflow.com/a/5095149/2553104
@@ -50,7 +51,7 @@ module GraphQL
       def transform_attribute(key, aggregate, attribute, result)
         result.each_with_object({}) do |(keys, value), object|
           key = Array.wrap(key)
-          keys = Array.wrap(keys)
+          keys = keys ? Array.wrap(keys).map { |x| x || 'null' } : ['null']
           nested = [:nested] * (key.length - 1)
 
           with_zipped = key.zip(keys).zip(nested).flatten!.compact

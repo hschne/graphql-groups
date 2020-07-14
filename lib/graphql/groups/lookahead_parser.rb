@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module GraphQL
   module Groups
     class LookaheadParser
@@ -21,11 +22,14 @@ module GraphQL
       end
 
       def get_field_proc(field, arguments)
+        # TODO: Use authorized instead of using send to circument protection
         proc { |**kwargs| field.owner.send(:new, {}, nil).send(field.query_method, **arguments, **kwargs) }
       end
 
       def aggregates(group_selection)
-        aggregate_selections = group_selection.selections.select { |selection| selection.field.is_a?(GraphQL::Groups::Schema::AggregateField) }
+        aggregate_selections = group_selection.selections.select do |selection|
+          selection.field.is_a?(GraphQL::Groups::Schema::AggregateField)
+        end
         aggregate_selections.each_with_object({}) do |selection, object|
           name = selection.name
           field = selection.field
@@ -39,6 +43,7 @@ module GraphQL
       end
 
       def get_aggregate_proc(field, arguments)
+        # TODO: Use authorized instead of using send to circument protection
         proc { |**kwargs| field.owner.send(:new, {}, nil).send(field.query_method, **kwargs, **arguments) }
       end
     end

@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe 'grouping', type: :feature do
-  describe 'using graphql' do
+RSpec.describe 'Feature', type: :feature do
+  describe 'grouping' do
     it 'with default query should return' do
       Author.create(name: 'name', age: 30)
 
