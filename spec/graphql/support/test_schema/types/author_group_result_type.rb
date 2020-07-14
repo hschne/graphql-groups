@@ -8,4 +8,3 @@ class AuthorGroupResultType < GraphQL::Groups::Schema::GroupResultType
     with { |scope, attribute| scope.average(attribute) }
   end
 end
-
