@@ -13,7 +13,7 @@ Add this line to your application's Gemfile and execute bundler.
 ```ruby
 gem 'graphql-groups'
 ```
-```
+```bash
 $ bundle install
 ```
 
@@ -21,7 +21,7 @@ $ bundle install
 
 Create a new group type to specify which attributes you wish to group by inheriting from `GraphQL::Groups::GroupType`
 
-```
+```ruby
 class AuthorGroupType < GraphQL::Groups::GroupType
   scope { Author.all }
 
@@ -31,7 +31,7 @@ end
 
 Include the new type in your schema using the `group` keyword. 
 
-```
+```ruby
 class QueryType < BaseType
   include GraphQL::Groups
 
