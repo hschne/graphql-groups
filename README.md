@@ -106,7 +106,7 @@ class BookGroupType < GraphQL::Groups::Schema::GroupType
 end
 ```
 
-For more examples see the [feature spec](./lib/graphql/feature_spec.rb). 
+For more examples see the [feature spec](./spec/graphql/feature_spec.rb) and [test schema](./spec/graphql/support/test_schema)
 
 ### Custom Aggregates
 
@@ -150,6 +150,8 @@ class AuthorGroupResultType < GraphQL::Groups::Schema::GroupResultType
   end
 end
 ```
+
+For more examples see the [feature spec](./spec/graphql/feature_spec.rb) and [test schema](./spec/graphql/support/test_schema)
 
 ## Limitations and Known Issues
 
