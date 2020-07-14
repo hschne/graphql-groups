@@ -7,7 +7,7 @@ module GraphQL
   module Groups
     module Schema
       class GroupResultType < GraphQL::Schema::Object
-        include Aggregates
+        include HasAggregates
 
         alias group_result object
 
@@ -27,12 +27,6 @@ module GraphQL
 
         def resolve_count
           group_result[1][:count]
-        end
-
-        private
-
-        def inner_result_type
-          @inner_result_type ||= self
         end
       end
     end

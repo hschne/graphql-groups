@@ -1,7 +1,8 @@
 # frozen_string_literal: true
+
 module GraphQL
   module Groups
-    module Aggregates
+    module HasAggregates
       def self.included(base)
         base.extend(ClassMethods)
       end
@@ -37,6 +38,8 @@ module GraphQL
           add_field(field_defn)
           field_defn
         end
+
+        private
 
         def aggregate_type(name)
           # TODO: Handle no aggregate type found

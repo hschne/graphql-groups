@@ -9,7 +9,8 @@ require 'graphql/groups/schema/group_field'
 require 'graphql/groups/schema/aggregate_field'
 require 'graphql/groups/schema/aggregate_type'
 
-require 'graphql/groups/aggregates'
+require 'graphql/groups/has_aggregates'
+require 'graphql/groups/has_groups'
 
 require 'graphql/groups/schema/group_result_type'
 require 'graphql/groups/schema/group_type'
