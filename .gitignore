@@ -163,3 +163,4 @@ tags
 .tool-versions
 .rspec_status
 test.db
+coverage
