@@ -8,14 +8,14 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Hans-Jörg Schnedlitz']
   spec.email         = ['hans.schnedlitz@gmail.com']
 
-  spec.summary       = 'A short summary'
+  spec.summary       = ''
   spec.description   = 'A description'
-  spec.homepage      = 'http://graphqlgroups.com'
+  spec.homepage      = 'https://github.com/hschne/graphql-groups'
   spec.license       = 'MIT'
 
   spec.metadata['homepage_uri'] = spec.homepage
   spec.metadata['source_code_uri'] = 'https://github.com/hschne/graphql-groups'
-  spec.metadata['changelog_uri'] = 'https://github.com/hschne/graphql-groups/CHANGELOG'
+  spec.metadata['changelog_uri'] = 'https://github.com/hschne/graphql-groups/blob/master/CHANGELOG.md'
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
