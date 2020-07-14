@@ -7,6 +7,7 @@ module GraphQL
       end
 
       module ClassMethods
+        # TODO: Error if there are no groupings defined
         def by(name, **options, &block)
           query_method = options[:query_method] || name
           resolver_method = "resolve_#{query_method}".to_sym

@@ -23,7 +23,7 @@ module GraphQL
 
       def get_field_proc(field, arguments)
         # TODO: Use authorized instead of using send to circument protection
-        proc { |**kwargs| field.owner.send(:new, {}, nil).send(field.query_method, **arguments, **kwargs) }
+        proc { |**kwargs| field.owner.send(:new, {}, nil).public_send(field.query_method, **arguments, **kwargs) }
       end
 
       def aggregates(group_selection)
@@ -34,7 +34,7 @@ module GraphQL
           name = selection.name
           field = selection.field
           if name == :count
-            proc = proc { |**kwargs| field.owner.send(:new, {}, nil).send(field.query_method, **kwargs) }
+            proc = proc { |**kwargs| field.owner.send(:new, {}, nil).public_send(field.query_method, **kwargs) }
             object[name] = { proc: proc }
           elsif selection.field.own_attributes.present?
             object[name] = { proc: get_aggregate_proc(field, selection.arguments), attributes: field.own_attributes }

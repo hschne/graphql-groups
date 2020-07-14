@@ -9,8 +9,6 @@ class BookGroupType < GraphQL::Groups::Schema::GroupType
     argument :interval, String, required: false
   end
 
-  private
-
   def published_at(scope:, interval:)
     case interval
     when 'month'
