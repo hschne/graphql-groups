@@ -1,5 +1,5 @@
 # GraphQL Groups
-
+[![Gem Version](https://badge.fury.io/rb/graphql-groups.svg)](https://badge.fury.io/rb/graphql-groups)
 [![Build Status](https://github.com/hschne/graphql-groups/workflows/Build/badge.svg)](https://github.com/hschne/graphql-groups/workflows/Build/badge.svg)
 [![Maintainability](https://api.codeclimate.com/v1/badges/692d4125ac8548fb145e/maintainability)](https://codeclimate.com/github/hschne/graphql-groups/maintainability) 
 [![Test Coverage](https://api.codeclimate.com/v1/badges/692d4125ac8548fb145e/test_coverage)](https://codeclimate.com/github/hschne/graphql-groups/test_coverage)
@@ -36,12 +36,13 @@ class QueryType < BaseType
   include GraphQL::Groups
 
   group :author_groups, AuthorGroupType
+end
 ```
 
 You can then run an aggregation query for this grouping. 
 
 ```graphql
-query { 
+query myQuery{ 
   authorGroups {
     age {
       key
