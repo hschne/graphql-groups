@@ -33,10 +33,7 @@ module GraphQL
 
         define_method name do |lookahead: nil|
           execution_plan = GraphQL::Groups::LookaheadParser.parse(lookahead)
-          base_query = nil
-          type.instance_eval do
-            base_query = instance_eval(&@own_scope)
-          end
+          base_query = type.authorized_new(object, context).scope
           results = Executor.call(base_query, execution_plan)
           GraphQL::Groups::ResultTransformer.new.run(results)
         end

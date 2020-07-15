@@ -8,13 +8,18 @@ class BaseType < GraphQL::Schema::Object; end
 require_relative 'models'
 require_relative 'types/book_group_type'
 require_relative 'types/author_group_type'
+require_relative 'types/statistics_type'
 
 class QueryType < BaseType
   include GraphQL::Groups
 
   group :author_groups, AuthorGroupType
 
-  group :book_groups, BookGroupType
+  field :statistics, StatisticsType, null: false
+
+  def statistics
+    Book.all
+  end
 end
 
 class GroupsSchema < GraphQL::Schema

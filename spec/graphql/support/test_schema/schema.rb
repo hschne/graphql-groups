@@ -21,6 +21,7 @@ class CreateBooksTable < ActiveRecord::Migration[5.2]
   def change
     create_table :books do |table|
       table.integer :author_id
+      table.string :name
       table.string :genre
       table.integer :list_price
       table.datetime :published_at
