@@ -39,11 +39,12 @@ module GraphQL
       def transform_aggregate(key, aggregate, result)
         result.each_with_object({}) do |(keys, value), object|
           key = Array.wrap(key)
-          keys = keys ? Array.wrap(keys).map { |x| x || 'null' } : ['null']
+          keys = keys ? Array.wrap(keys) : [nil]
           nested = [:nested] * (key.length - 1)
 
           # See https://stackoverflow.com/a/5095149/2553104
-          with_zipped = key.zip(keys).zip(nested).flatten!.compact
+          with_zipped = key.zip(keys).zip(nested).flatten!
+          with_zipped = with_zipped.first(with_zipped.size - 1)
           with_zipped.append(aggregate)
           hash = with_zipped.reverse.inject(value) { |a, n| { n => a } }
           object.deep_merge!(hash)
@@ -53,10 +54,11 @@ module GraphQL
       def transform_attribute(key, aggregate, attribute, result)
         result.each_with_object({}) do |(keys, value), object|
           key = Array.wrap(key)
-          keys = keys ? Array.wrap(keys).map { |x| x || 'null' } : ['null']
+          keys = keys ? Array.wrap(keys) : [nil]
           nested = [:nested] * (key.length - 1)
 
-          with_zipped = key.zip(keys).zip(nested).flatten!.compact
+          with_zipped = key.zip(keys).zip(nested).flatten!
+          with_zipped = with_zipped.first(with_zipped.size - 1)
           with_zipped.append(aggregate)
           with_zipped.append(attribute)
           hash = with_zipped.reverse.inject(value) { |a, n| { n => a } }
