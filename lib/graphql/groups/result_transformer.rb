@@ -24,13 +24,15 @@ module GraphQL
       end
 
       def transform_result(key, result)
-        result.each_with_object({}) do |(aggregate_key, value), object|
+        transformed = result.each_with_object({}) do |(aggregate_key, value), object|
           if value.values.any? { |x| x.is_a?(Hash) }
             value.each { |attribute, value| object.deep_merge!(transform_attribute(key, aggregate_key, attribute, value)) }
           else
             object.deep_merge!(transform_aggregate(key, aggregate_key, value))
           end
         end
+
+        transformed.presence || { key => [] }
       end
 
       # TODO: Merge transform aggregate and transform attribute
