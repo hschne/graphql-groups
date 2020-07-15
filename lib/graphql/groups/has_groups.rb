@@ -30,6 +30,7 @@ module GraphQL
             kwargs[:scope].group(name)
           end
 
+          # TODO: Warn / Disallow overwriting these resolver methods
           define_method resolver_method do |**_|
             group[name]
           end
@@ -52,6 +53,7 @@ module GraphQL
         private
 
         def own_result_type
+          # TODO: Change this so that it works for custom result types with different names
           name = "#{self.name.gsub(/Type$/, '')}ResultType"
 
           type = name.safe_constantize || GraphQL::Groups::Schema::GroupResultType

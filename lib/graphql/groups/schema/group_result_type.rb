@@ -11,6 +11,7 @@ module GraphQL
 
         alias group_result object
 
+        # TODO: Add descriptions to default fields
         field :key, String, null: false
 
         field :count, Integer, null: false

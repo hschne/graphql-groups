@@ -10,9 +10,8 @@ module GraphQL
 
         alias group object
 
+        # TODO: Make group field inherit from default field, so that users default args/fields are respected
         field_class(GroupField)
-
-
       end
     end
   end

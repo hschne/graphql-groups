@@ -45,6 +45,21 @@ module GraphQL
         end
       end
 
+      describe 'with no results' do
+        let(:input) {
+          { name: { count: {
+          } } }
+        }
+
+        let(:output) { { name: [] } }
+
+        it 'returns empty array' do
+          result = described_class.new.run(input)
+
+          expect(result).to eq(output)
+        end
+      end
+
       describe 'with multiple items' do
         let(:input) {
           { name: { count: {

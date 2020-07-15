@@ -28,7 +28,6 @@ module GraphQL
 
     module ClassMethods
       def group(name, type, **options)
-        # TODO: Suppress/warn if options are used that cannot be used
         field name, type, extras: [:lookahead], null: false, **options
 
         define_method name do |lookahead: nil|

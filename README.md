@@ -32,7 +32,7 @@ end
 Include the new type in your schema using the `group` keyword. 
 
 ```ruby
-class QueryType < BaseType
+class QueryType < GraphQL::Schema::Object
   include GraphQL::Groups
 
   group :author_groups, AuthorGroupType
@@ -111,6 +111,31 @@ class BookGroupType < GraphQL::Groups::Schema::GroupType
 end
 ```
 
+When defining a group type's scope you may access the parents `object` and `context`. 
+
+```ruby
+class QueryType < GraphQL::Schema::Object
+  field :statistics, StatisticsType, null: false
+
+  def statistics
+    Book.all
+  end
+end
+
+class StatisticsType < GraphQL::Schema::Object
+  include GraphQL::Groups
+
+  group :books, BookGroupType
+end
+
+class BookGroupType < GraphQL::Groups::Schema::GroupType
+  # `object` refers to `Book.all`
+  scope { object.where(author_id: context[:current_person]) }
+
+  by :name
+end
+```
+
 For more examples see the [feature spec](./spec/graphql/feature_spec.rb) and [test schema](./spec/graphql/support/test_schema)
 
 ### Custom Aggregates
@@ -160,8 +185,8 @@ For more examples see the [feature spec](./spec/graphql/feature_spec.rb) and [te
 
 ## Limitations and Known Issues
 
-*This gem is in early development!*. There are a number of issues that are still being addressed. There is no guarantee
-that this libraries API will not change fundamentally from one release to the next.
+*This gem is in early development!* There are a number of issues that are still being addressed. There is no guarantee
+that this libraries API will not change fundamentally from one release to the next. Please refer to the [issue tracker](https://github.com/hschne/graphql-groups/issues) for a list of known issues.
 
 ## Development
 
@@ -171,7 +196,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/graphql-groups. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/hschne/graphql-groups. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 ## License
 
