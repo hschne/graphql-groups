@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Feature', type: :feature do
+RSpec.describe 'feature', type: :feature do
   describe 'grouping' do
     it 'with default query should return' do
       Author.create(name: 'name', age: 30)
@@ -87,23 +87,47 @@ RSpec.describe 'Feature', type: :feature do
       expect(group['average']['age']).to eq(7.5)
     end
 
-    it 'supports arguments data' do
+    it 'supports using object in scope' do
       author = Author.create(name: 'name')
-      time = Time.parse('2020-01-01 00:00:00 UTC')
-      Book.create(author: author, published_at: time)
+      Book.create(author: author, name: 'name')
 
       query = GQLi::DSL.query {
-        bookGroups {
-          publishedAt(interval: 'day') {
-            key
-            count
+        statistics {
+          books {
+            name {
+              key
+              count
+            }
           }
         }
       }.to_gql
 
       result = GroupsSchema.execute(query)
 
-      group = result['data']['bookGroups']['publishedAt'][0]
+      group = result['data']['statistics']['books']['name'][0]
+      expect(group['key']).to eq('name')
+      expect(group['count']).to eq(1)
+    end
+
+    it 'supports arguments data' do
+      author = Author.create(name: 'name')
+      time = Time.parse('2020-01-01 00:00:00 UTC')
+      Book.create(author: author, published_at: time)
+
+      query = GQLi::DSL.query {
+        statistics {
+          books {
+            publishedAt(interval: 'day') {
+              key
+              count
+            }
+          }
+        }
+      }.to_gql
+
+      result = GroupsSchema.execute(query)
+
+      group = result['data']['statistics']['books']['publishedAt'][0]
       expect(group['key']).to eq(time.to_s)
       expect(group['count']).to eq(1)
     end

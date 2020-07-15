@@ -10,11 +10,9 @@ module GraphQL
 
         alias group object
 
-        def initialize(object, context)
-          super(object, context)
-        end
-
         field_class(GroupField)
+
+
       end
     end
   end

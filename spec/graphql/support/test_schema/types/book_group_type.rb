@@ -3,7 +3,9 @@
 require 'graphql/groups'
 
 class BookGroupType < GraphQL::Groups::Schema::GroupType
-  scope { Book.all }
+  scope { object }
+
+  by :name
 
   by :published_at do
     argument :interval, String, required: false

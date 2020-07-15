@@ -6,7 +6,16 @@ module GraphQL
         base.extend(ClassMethods)
       end
 
+      attr_reader :scope
+
+      def initialize(object, context)
+        super(object, context)
+        @scope = instance_eval(&self.class.class_scope)
+      end
+
       module ClassMethods
+        attr_reader :class_scope
+
         # TODO: Error if there are no groupings defined
         def by(name, **options, &block)
           query_method = options[:query_method] || name
@@ -37,7 +46,7 @@ module GraphQL
         end
 
         def scope(&block)
-          @own_scope = block
+          @class_scope = block
         end
 
         private
@@ -50,7 +59,7 @@ module GraphQL
 
           @classes ||= {}
           @classes[type] ||= Class.new(type) do
-            graphql_name name
+            graphql_name name.demodulize
 
             field :group_by, own_group_type, null: false, camelize: true
 
@@ -58,10 +67,6 @@ module GraphQL
               group_result[1][:nested]
             end
           end
-        end
-
-        def own_scope
-          @own_scope ||= nil
         end
       end
     end
