@@ -4,11 +4,11 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/692d4125ac8548fb145e/maintainability)](https://codeclimate.com/github/hschne/graphql-groups/maintainability) 
 [![Test Coverage](https://api.codeclimate.com/v1/badges/692d4125ac8548fb145e/test_coverage)](https://codeclimate.com/github/hschne/graphql-groups/test_coverage)
 
-Create flexible and performant aggregation queries with [graphql-ruby](https://github.com/rmosolgo/graphql-ruby)
+Create flexible and performant aggregation queries with [graphql-ruby](https://github.com/rmosolgo/graphql-ruby).
 
 ## Installation
 
-Add this line to your application's Gemfile and execute bundler.
+Add this line to your application's Gemfile and run `bundle install`.
 
 ```ruby
 gem 'graphql-groups'
