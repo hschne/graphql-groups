@@ -246,7 +246,7 @@ For more examples see the [feature spec](./spec/graphql/feature_spec.rb) and [te
 
 ## Performance
 
-While it is possible to add grouping to your GraphQL schema by using `group_by` (see [Why?](#why), this performs poorly for large amounts of data. The graph below shows the number of requests per second possible with both implementations.
+While it is possible to add grouping to your GraphQL schema by using `group_by` (see [above](#why)) this performs poorly for large amounts of data. The graph below shows the number of requests per second possible with both implementations.
 
 ![benchmark](benchmark/benchmark.jpg)
 
