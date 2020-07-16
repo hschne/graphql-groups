@@ -76,7 +76,7 @@ query myQuery{
 using `group_by` (see for example [here](https://dev.to/gopeter/how-to-add-a-groupby-field-to-your-graphql-api-1f2j)), 
 but this performs poorly for large amounts of data. 
 
-`graphql-groups` allows you to write flexible, readable queries while leveraging the power of your database to group and
+`graphql-groups` allows you to write flexible, readable queries while leveraging your database to group and
 aggregate data. See [performance](#Performance) for a benchmark.
 
 ## Advanced Usage
@@ -251,6 +251,7 @@ While it is possible to add grouping to your GraphQL schema by using `group_by` 
 ![benchmark](benchmark/benchmark.jpg)
 
 The benchmark queries the author count grouped by name, using an increasing number of authors. While the in-memory approach of grouping works well for a small number of records, it is outperformed quickly as that number increases.
+
 Benchmarks are generated using [benchmark-ips](https://github.com/evanphx/benchmark-ips). The benchmark script used to generate the report be found [here](./benchmark/benchmark.rb)
 
 ## Limitations and Known Issues
