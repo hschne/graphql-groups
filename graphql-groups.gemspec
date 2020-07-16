@@ -29,10 +29,10 @@ Gem::Specification.new do |spec|
   spec.executables = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 
-  spec.add_development_dependency 'activerecord', '~> 5.0'
+  spec.add_development_dependency 'activerecord', '~> 6.0'
   spec.add_development_dependency 'benchmark-ips', '~> 2.8'
   spec.add_development_dependency 'bundler', '~> 2.0'
-  spec.add_development_dependency 'database_cleaner-active_record'
+  spec.add_development_dependency 'database_cleaner-active_record', '~> 1.8'
   spec.add_development_dependency 'gqli', '~> 1.0'
   spec.add_development_dependency 'gruff', '~> 0.10'
   spec.add_development_dependency 'rake', '~> 13.0'
