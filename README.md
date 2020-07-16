@@ -19,17 +19,18 @@ $ bundle install
 
 ## Usage
 
-Create a new group type to specify which attributes you wish to group by inheriting from `GraphQL::Groups::GroupType`
+Create a new group type to specify which attributes you wish to group by inheriting from `GraphQL::Groups::GroupType`:
 
 ```ruby
 class AuthorGroupType < GraphQL::Groups::GroupType
   scope { Author.all }
 
+  by :name
   by :age
 end
 ```
 
-Include the new type in your schema using the `group` keyword. 
+Include the new type in your schema using the `group` keyword, and you are done.
 
 ```ruby
 class QueryType < GraphQL::Schema::Object
@@ -39,7 +40,7 @@ class QueryType < GraphQL::Schema::Object
 end
 ```
 
-You can then run an aggregation query for this grouping. 
+You can then run a query to retrieve statistical information about your data, for example the number of authors per age.
 
 ```graphql
 query myQuery{ 
@@ -67,14 +68,74 @@ query myQuery{
     ]
   }
 }
-
 ```
+
+## Why? 
+
+`graphql-ruby` lacks a built in way to query statistical data of collections. It is possible to add this functionality by
+using `group_by` (see for example [here](https://dev.to/gopeter/how-to-add-a-groupby-field-to-your-graphql-api-1f2j)), 
+but this performs poorly for large amounts of data. 
+
+`graphql-groups` allows you to write flexible, readable queries while leveraging the power of your database to group and
+aggregate data. See [performance](#Performance) for a benchmark.
 
 ## Advanced Usage
 
+#### Grouping by Multiple Attributes
+
+This library really shines when you want to group by multiple attributes, or otherwise retrieve complex statistical information
+within a single GraphQL query. 
+
+For example, to get the number of authors grouped by their name, and then also by age, you could construct a query similar to this: 
+
+```graphql
+query myQuery{ 
+  authorGroups {
+    name {
+      key
+      count
+      groupBy {
+       age {
+        key
+        count
+       }
+      }
+    }
+ }
+}
+``` 
+
+```json
+{
+  "authorGroups":{
+    "name":[
+      {
+        "key":"Ada",
+        "count":2,
+        "groupBy":  {
+          "age": [
+            {
+            "key":"30",
+            "count":1
+            },
+            {
+            "key":"35",
+            "count":1
+            }
+          ]     
+        }
+      },
+      ...
+    ]
+  }
+}
+```
+
+`graphql-groups` will automatically execute the required queries and return the results in a easily parsable response.
+
 #### Custom Grouping Queries
 
-To customize how items are grouped, you may specify the grouping query by creating a method of the same name in the group type. 
+To customize which queries are executed to group items, you may specify the grouping query by creating a method of the same name in the group type.
 
 ```ruby
 class AuthorGroupType < GraphQL::Groups::Schema::GroupType
@@ -136,7 +197,7 @@ class BookGroupType < GraphQL::Groups::Schema::GroupType
 end
 ```
 
-For more examples see the [feature spec](./spec/graphql/feature_spec.rb) and [test schema](./spec/graphql/support/test_schema)
+For more examples see the [feature spec](./spec/graphql/feature_spec.rb) and [test schema](./spec/graphql/support/test_schema.rb)
 
 ### Custom Aggregates
 
@@ -182,6 +243,15 @@ end
 ```
 
 For more examples see the [feature spec](./spec/graphql/feature_spec.rb) and [test schema](./spec/graphql/support/test_schema)
+
+## Performance
+
+While it is possible to add grouping to your GraphQL schema by using `group_by` (see [Why?](#why), this performs poorly for large amounts of data. The graph below shows the number of requests per second possible with both implementations.
+
+![benchmark](benchmark/benchmark.jpg)
+
+The benchmark queries the author count grouped by name, using an increasing number of authors. While the in-memory approach of grouping works well for a small number of records, it is outperformed quickly as that number increases.
+Benchmarks are generated using [benchmark-ips](https://github.com/evanphx/benchmark-ips). The benchmark script used to generate the report be found [here](./benchmark/benchmark.rb)
 
 ## Limitations and Known Issues
 

@@ -24,11 +24,13 @@ module GraphQL
       end
 
       def transform_result(key, result)
-        transformed = result.each_with_object({}) do |(aggregate_key, value), object|
-          if value.values.any? { |x| x.is_a?(Hash) }
-            value.each { |attribute, value| object.deep_merge!(transform_attribute(key, aggregate_key, attribute, value)) }
+        transformed = result.each_with_object({}) do |(aggregate_key, aggregate_value), object|
+          if aggregate_value.values.any? { |x| x.is_a?(Hash) }
+            aggregate_value.each do |attribute, value|
+              object.deep_merge!(transform_attribute(key, aggregate_key, attribute, value))
+            end
           else
-            object.deep_merge!(transform_aggregate(key, aggregate_key, value))
+            object.deep_merge!(transform_aggregate(key, aggregate_key, aggregate_value))
           end
         end
 
@@ -38,13 +40,7 @@ module GraphQL
       # TODO: Merge transform aggregate and transform attribute
       def transform_aggregate(key, aggregate, result)
         result.each_with_object({}) do |(keys, value), object|
-          key = Array.wrap(key)
-          keys = keys ? Array.wrap(keys) : [nil]
-          nested = [:nested] * (key.length - 1)
-
-          # See https://stackoverflow.com/a/5095149/2553104
-          with_zipped = key.zip(keys).zip(nested).flatten!
-          with_zipped = with_zipped.first(with_zipped.size - 1)
+          with_zipped = build_keys(key, keys)
           with_zipped.append(aggregate)
           hash = with_zipped.reverse.inject(value) { |a, n| { n => a } }
           object.deep_merge!(hash)
@@ -53,16 +49,30 @@ module GraphQL
 
       def transform_attribute(key, aggregate, attribute, result)
         result.each_with_object({}) do |(keys, value), object|
-          key = Array.wrap(key)
-          keys = keys ? Array.wrap(keys) : [nil]
-          nested = [:nested] * (key.length - 1)
-
-          with_zipped = key.zip(keys).zip(nested).flatten!
-          with_zipped = with_zipped.first(with_zipped.size - 1)
+          with_zipped = build_keys(key, keys)
           with_zipped.append(aggregate)
           with_zipped.append(attribute)
           hash = with_zipped.reverse.inject(value) { |a, n| { n => a } }
           object.deep_merge!(hash)
+        end
+      end
+
+      def build_keys(key, keys)
+        key = wrap(key)
+        keys = keys ? wrap(keys) : [nil]
+        nested = [:nested] * (key.length - 1)
+
+        with_zipped = key.zip(keys).zip(nested).flatten!
+        with_zipped.first(with_zipped.size - 1)
+      end
+
+      def wrap(object)
+        if object.nil?
+          []
+        elsif object.respond_to?(:to_ary)
+          object.to_ary || [object]
+        else
+          [object]
         end
       end
     end

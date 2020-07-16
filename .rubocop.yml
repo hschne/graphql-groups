@@ -7,11 +7,12 @@ Metrics/BlockLength:
   ExcludedMethods: ['describe', 'context']
 
 Layout/MultilineMethodCallIndentation:
-  EnforcedStyle: indented
+  EnforcedStyle: indented_relative_to_receiver
 
 Style/BlockDelimiters:
   Exclude:
     - spec/**/*
+    - benchmark/**/*
 
 RSpec/ExampleLength:
   Exclude:

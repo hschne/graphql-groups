@@ -34,7 +34,7 @@ module GraphQL
 
         let(:output) {
           { name: {
-            'null' => { count: 1 }
+            nil => { count: 1 }
           } }
         }
 

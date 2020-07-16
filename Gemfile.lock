@@ -22,6 +22,7 @@ GEM
       public_suffix (>= 2.0.2, < 5.0)
     arel (9.0.0)
     ast (2.4.1)
+    benchmark-ips (2.8.2)
     concurrent-ruby (1.1.6)
     database_cleaner (1.8.5)
     database_cleaner-active_record (1.8.0)
@@ -36,7 +37,11 @@ GEM
       http (> 0.8, < 3.0)
       multi_json (~> 1)
     graphql (1.10.10)
+    gruff (0.10.0)
+      histogram
+      rmagick
     hashie (3.6.0)
+    histogram (0.2.4.1)
     http (2.2.2)
       addressable (~> 2.3)
       http-cookie (~> 1.0)
@@ -48,7 +53,6 @@ GEM
     http_parser.rb (0.6.0)
     i18n (1.8.2)
       concurrent-ruby (~> 1.0)
-    json (2.3.0)
     minitest (5.14.0)
     multi_json (1.14.1)
     parallel (1.19.2)
@@ -59,6 +63,7 @@ GEM
     rake (13.0.1)
     regexp_parser (1.7.1)
     rexml (3.2.4)
+    rmagick (4.1.2)
     rspec (3.9.0)
       rspec-core (~> 3.9.0)
       rspec-expectations (~> 3.9.0)
@@ -86,11 +91,10 @@ GEM
     rubocop-rspec (1.42.0)
       rubocop (>= 0.87.0)
     ruby-progressbar (1.10.1)
-    simplecov (0.16.1)
+    simplecov (0.18.5)
       docile (~> 1.1)
-      json (>= 1.8, < 3)
-      simplecov-html (~> 0.10.0)
-    simplecov-html (0.10.2)
+      simplecov-html (~> 0.11)
+    simplecov-html (0.12.2)
     sqlite3 (1.4.2)
     thread_safe (0.3.6)
     tzinfo (1.2.7)
@@ -105,15 +109,17 @@ PLATFORMS
 
 DEPENDENCIES
   activerecord (~> 5.0)
+  benchmark-ips (~> 2.8)
   bundler (~> 2.0)
   database_cleaner-active_record
-  gqli
+  gqli (~> 1.0)
   graphql-groups!
+  gruff (~> 0.10)
   rake (~> 13.0)
   rspec (~> 3.0)
   rubocop (~> 0.88)
   rubocop-rspec (~> 1.42)
-  simplecov
+  simplecov (~> 0.18.5)
   sqlite3 (~> 1.4.2)
 
 BUNDLED WITH
