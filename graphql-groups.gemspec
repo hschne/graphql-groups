@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.authors = ['Hans-Jörg Schnedlitz']
   spec.email = ['hans.schnedlitz@gmail.com']
 
-  spec.summary = 'Create flexible and performant aggregation queries with graphql-ruby'
+  spec.summary = 'Create flexible and fast aggregation queries with graphql-ruby'
   spec.description = <<~HEREDOC
     GraphQL Groups makes it easy to add aggregation queries to your GraphQL schema. It combines a simple, flexible 
     schema definition with high performance'
