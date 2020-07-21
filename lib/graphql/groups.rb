@@ -3,8 +3,8 @@
 require 'graphql/groups/version'
 
 require 'graphql'
-require 'graphql/groups/extensions/wrap'
 
+require 'graphql/groups/group_type_registry'
 require 'graphql/groups/schema/group_field'
 require 'graphql/groups/schema/aggregate_field'
 require 'graphql/groups/schema/aggregate_type'

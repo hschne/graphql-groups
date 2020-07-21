@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module GraphQL
   module Groups
     module HasGroups
@@ -53,22 +54,28 @@ module GraphQL
         private
 
         def own_result_type
-          # TODO: Change this so that it works for custom result types with different names
-          name = "#{self.name.gsub(/Type$/, '')}ResultType"
-
-          type = name.safe_constantize || GraphQL::Groups::Schema::GroupResultType
+          type = find_result_type
           own_group_type = self
 
-          @classes ||= {}
-          @classes[type] ||= Class.new(type) do
-            graphql_name name.demodulize
+          registry = GraphQL::Groups::GroupTypeRegistry.instance
+          # To avoid name conflicts check if a result type has already been registered, and if not create a new one
+          registry.get(type) || registry.register(type, Class.new(type) do
+            graphql_name type.name.demodulize
 
             field :group_by, own_group_type, null: false, camelize: true
 
             def group_by
               group_result[1][:nested]
             end
-          end
+          end)
+        end
+
+        def find_result_type
+          return @own_result_type if @own_result_type
+
+          return GraphQL::Groups::Schema::GroupResultType unless name
+
+          "#{name.gsub(/Type$/, '')}ResultType".safe_constantize || GraphQL::Groups::Schema::GroupResultType
         end
       end
     end
