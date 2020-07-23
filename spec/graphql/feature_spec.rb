@@ -48,6 +48,8 @@ RSpec.describe 'feature', type: :feature do
       query = GQLi::DSL.query {
         authorGroups {
           name {
+            key
+            count
             groupBy {
               age {
                 key

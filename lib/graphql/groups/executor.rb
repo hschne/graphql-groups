@@ -24,7 +24,8 @@ module GraphQL
             end
           end
 
-          return { key => results } unless value[:nested]
+          results = { key => results }
+          return results unless value[:nested]
 
           value[:nested].each do |inner_key, inner_value|
             new_key = (Array.wrap(key) << inner_key)
