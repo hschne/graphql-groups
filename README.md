@@ -36,7 +36,7 @@ Include the new type in your schema using the `group` keyword, and you are done.
 class QueryType < GraphQL::Schema::Object
   include GraphQL::Groups
 
-  group :authorGroupBy, AuthorGroupType
+  group :author_group_by, AuthorGroupType
 end
 ```
 
@@ -54,7 +54,7 @@ query myQuery{
 ```
 ```json
 {
-  "authorGroups":{
+  "authorGroupBy":{
     "age":[
       {
         "key":"31",
