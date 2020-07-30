@@ -20,13 +20,12 @@ $ bundle install
 
 ## Usage
 
-Create a new group type to specify which attributes you wish to group by inheriting from `GraphQL::Groups::GroupType`:
+Suppose you want to get the number of authors, grouped by their age. Create a new group type by inheriting from `GraphQL::Groups::GroupType`:
 
 ```ruby
 class AuthorGroupType < GraphQL::Groups::GroupType
   scope { Author.all }
 
-  by :name
   by :age
 end
 ```
@@ -37,7 +36,7 @@ Include the new type in your schema using the `group` keyword, and you are done.
 class QueryType < GraphQL::Schema::Object
   include GraphQL::Groups
 
-  group :author_groups, AuthorGroupType
+  group :authorGroupBy, AuthorGroupType
 end
 ```
 
@@ -45,7 +44,7 @@ You can then run a query to retrieve statistical information about your data, fo
 
 ```graphql
 query myQuery{ 
-  authorGroups {
+  authorGroupBy {
     age {
       key
       count
