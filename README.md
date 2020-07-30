@@ -72,12 +72,9 @@ query myQuery{
 
 ## Why? 
 
-`graphql-ruby` lacks a built in way to query statistical data of collections. It is possible to add this functionality by
-using `group_by` (see for example [here](https://dev.to/gopeter/how-to-add-a-groupby-field-to-your-graphql-api-1f2j)), 
-but this performs poorly for large amounts of data. 
+`graphql-ruby` lacks a built in way to retrieve statistical data, such as counts or averages. It is possible to implement custom queries that provide  this functionality by using `group_by` (see for example [here](https://dev.to/gopeter/how-to-add-a-groupby-field-to-your-graphql-api-1f2j)), but this performs poorly for large amounts of data. 
 
-`graphql-groups` allows you to write flexible, readable queries while leveraging your database to group and
-aggregate data. See [performance](#Performance) for a benchmark.
+`graphql-groups` allows you to write flexible, readable queries while leveraging your database to aggreate data. It does so by performing an AST analysis on your request and executing exactly the database queries needed to fulfill it. This performs much better than grouping and aggregating in memory. See [performance](#Performance) for a benchmark.
 
 ## Advanced Usage
 
