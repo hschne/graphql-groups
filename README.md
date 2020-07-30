@@ -1,10 +1,11 @@
 # GraphQL Groups
+
 [![Gem Version](https://badge.fury.io/rb/graphql-groups.svg)](https://badge.fury.io/rb/graphql-groups)
 [![Build Status](https://github.com/hschne/graphql-groups/workflows/Build/badge.svg)](https://github.com/hschne/graphql-groups/workflows/Build/badge.svg)
 [![Maintainability](https://api.codeclimate.com/v1/badges/692d4125ac8548fb145e/maintainability)](https://codeclimate.com/github/hschne/graphql-groups/maintainability) 
 [![Test Coverage](https://api.codeclimate.com/v1/badges/692d4125ac8548fb145e/test_coverage)](https://codeclimate.com/github/hschne/graphql-groups/test_coverage)
 
-Create flexible and performant aggregation queries with [graphql-ruby](https://github.com/rmosolgo/graphql-ruby).
+Statistics and aggregates built on top of [graphql-ruby](https://github.com/rmosolgo/graphql-ruby).
 
 ## Installation
 
@@ -258,6 +259,12 @@ Benchmarks are generated using [benchmark-ips](https://github.com/evanphx/benchm
 
 *This gem is in early development!* There are a number of issues that are still being addressed. There is no guarantee
 that this libraries API will not change fundamentally from one release to the next. Please refer to the [issue tracker](https://github.com/hschne/graphql-groups/issues) for a list of known issues.
+
+## Credits
+
+![Meister](meister.png)
+
+graphql-groups is supported by and battle-tested at [Meister](https://www.meisterlabs.com/)
 
 ## Development
 
