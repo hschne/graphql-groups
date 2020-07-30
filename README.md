@@ -261,9 +261,9 @@ that this libraries API will not change fundamentally from one release to the ne
 
 ## Credits
 
-![Meister](meister.png)
+<a href="https://www.meisterlabs.com"><img src="Meister.png" width="50%"></a>
 
-graphql-groups is supported by and battle-tested at [Meister](https://www.meisterlabs.com/)
+[graphql-groups](https://github.com/hschne/graphql-groups) was created at [meister](https://www.meisterlabs.com/)
 
 ## Development
 
