@@ -40,8 +40,7 @@ class QueryType < GraphQL::Schema::Object
 end
 ```
 
-You can then run a query to retrieve statistical information about your data, for example the number of authors per age.
-
+You can then run the following query to retrieve the number of authors per age. 
 ```graphql
 query myQuery{ 
   authorGroupBy {
