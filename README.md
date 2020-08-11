@@ -77,7 +77,7 @@ query myQuery{
 
 ## Advanced Usage
 
-#### Grouping by Multiple Attributes
+### Grouping by Multiple Attributes
 
 This library really shines when you want to group by multiple attributes, or otherwise retrieve complex statistical information
 within a single GraphQL query. 
@@ -129,7 +129,7 @@ query myQuery{
 
 `graphql-groups` will automatically execute the required queries and return the results in a easily parsable response.
 
-#### Custom Grouping Queries
+### Custom Grouping Queries
 
 To customize which queries are executed to group items, you may specify the grouping query by creating a method of the same name in the group type.
 
@@ -145,7 +145,7 @@ class AuthorGroupType < GraphQL::Groups::Schema::GroupType
 end
 ```
 
-You may also pass arguments to custom grouping queries. In this case, pass any arguments to your group query as keyword arguments.
+You may also pass arguments to custom grouping queries. In this case, pass any arguments to your group query as keyword arguments. 
 
 ```ruby
 class BookGroupType < GraphQL::Groups::Schema::GroupType
@@ -167,6 +167,23 @@ class BookGroupType < GraphQL::Groups::Schema::GroupType
   end
 end
 ```
+
+You may access the query `context` in custom queries. As opposed to resolver methods accessing `object` is not possible and will raise an error. 
+
+```ruby
+class BookGroupType < GraphQL::Groups::Schema::GroupType
+  scope { Book.all }
+
+  by :list_price
+
+  def list_price(scope:)
+    currency = context[:currency] || ' $'
+    scope.group("list_price || ' #{currency}'")
+  end
+end
+```
+
+### Custom Scopes
 
 When defining a group type's scope you may access the parents `object` and `context`. 
 
@@ -192,8 +209,6 @@ class BookGroupType < GraphQL::Groups::Schema::GroupType
   by :name
 end
 ```
-
-For more examples see the [feature spec](./spec/graphql/feature_spec.rb) and [test schema](./spec/graphql/support/test_schema.rb)
 
 ### Custom Aggregates
 

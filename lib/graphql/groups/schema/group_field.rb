@@ -7,7 +7,6 @@ module GraphQL
         attr_reader :query_method
 
         def initialize(query_method:, **options, &definition_block)
-          # TODO: Make sure that users can access the context in custom query methods
           @query_method = query_method
           super(**options, &definition_block)
         end

@@ -133,5 +133,27 @@ RSpec.describe 'feature', type: :feature do
       expect(group['key']).to eq(time.to_s)
       expect(group['count']).to eq(1)
     end
+
+    it 'supports context in query methods' do
+      author = Author.create(name: 'name')
+      Book.create(author: author, list_price: 10)
+
+      query = GQLi::DSL.query {
+        statistics {
+          books {
+            listPrice {
+              key
+              count
+            }
+          }
+        }
+      }.to_gql
+
+      result = GroupsSchema.execute(query, context: { currency: 'EUR' })
+
+      group = result['data']['statistics']['books']['listPrice'][0]
+      expect(group['key']).to eq('10 EUR')
+      expect(group['count']).to eq(1)
+    end
   end
 end

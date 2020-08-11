@@ -39,6 +39,8 @@ class BookGroupType < GraphQL::Groups::Schema::GroupType
     argument :interval, String, required: false
   end
 
+  by :list_price
+
   def published_at(scope:, interval:)
     case interval
     when 'month'
@@ -48,6 +50,11 @@ class BookGroupType < GraphQL::Groups::Schema::GroupType
     else
       scope.group("strftime('%Y-%m-%d 00:00:00 UTC', published_at)")
     end
+  end
+
+  def list_price(scope:)
+    currency = context[:currency] || ' $'
+    scope.group("list_price || ' #{currency}'")
   end
 end
 

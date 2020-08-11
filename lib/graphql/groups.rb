@@ -31,7 +31,7 @@ module GraphQL
         field name, type, extras: [:lookahead], null: false, **options
 
         define_method name do |lookahead: nil|
-          execution_plan = GraphQL::Groups::LookaheadParser.parse(lookahead)
+          execution_plan = GraphQL::Groups::LookaheadParser.parse(lookahead, context)
           base_query = type.authorized_new(object, context).scope
           results = Executor.call(base_query, execution_plan)
           GraphQL::Groups::ResultTransformer.new.run(results)

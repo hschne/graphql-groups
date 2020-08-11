@@ -3,8 +3,12 @@
 module GraphQL
   module Groups
     class LookaheadParser
-      def self.parse(base_selection)
-        LookaheadParser.new.group_selections(base_selection, {})
+      def self.parse(base_selection, context)
+        LookaheadParser.new(context).group_selections(base_selection, {})
+      end
+
+      def initialize(context)
+        @context = context
       end
 
       def group_selections(root, hash)
@@ -22,8 +26,7 @@ module GraphQL
       end
 
       def get_field_proc(field, arguments)
-        # TODO: Use authorized instead of using send to circument protection
-        proc { |**kwargs| field.owner.send(:new, {}, nil).public_send(field.query_method, **arguments, **kwargs) }
+        proc { |**kwargs| field.owner.authorized_new(nil, @context).public_send(field.query_method, **arguments, **kwargs) }
       end
 
       def aggregates(group_selection)
@@ -43,8 +46,7 @@ module GraphQL
       end
 
       def get_aggregate_proc(field, arguments)
-        # TODO: Use authorized instead of using send to circument protection
-        proc { |**kwargs| field.owner.send(:new, {}, nil).send(field.query_method, **kwargs, **arguments) }
+        proc { |**kwargs| field.owner.authorized_new(nil, @context).send(field.query_method, **kwargs, **arguments) }
       end
     end
   end
