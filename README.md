@@ -23,7 +23,7 @@ $ bundle install
 Suppose you want to get the number of authors, grouped by their age. Create a new group type by inheriting from `GraphQL::Groups::GroupType`:
 
 ```ruby
-class AuthorGroupType < GraphQL::Groups::GroupType
+class AuthorGroupType < GraphQL::Groups::Schema::GroupType
   scope { Author.all }
 
   by :age
