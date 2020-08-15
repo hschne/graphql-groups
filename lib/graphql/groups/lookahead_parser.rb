@@ -4,6 +4,7 @@ module GraphQL
   module Groups
     class LookaheadParser
       def self.parse(base_selection, context)
+        # TODO: Raise error if no aggregate selection is made
         LookaheadParser.new(context).group_selections(base_selection, {})
       end
 
