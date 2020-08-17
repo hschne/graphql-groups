@@ -113,8 +113,9 @@ RSpec.describe 'feature', type: :feature do
 
     it 'supports arguments data' do
       author = Author.create(name: 'name')
-      time = Time.parse('2020-01-01 00:00:00 UTC')
+      time = Time.parse('2010-01-01 00:00:00 UTC')
       Book.create(author: author, published_at: time)
+      Book.create(author: author, published_at: Time.now)
 
       query = GQLi::DSL.query {
         statistics {
