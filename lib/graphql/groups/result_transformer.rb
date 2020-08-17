@@ -39,15 +39,29 @@ module GraphQL
 
       # TODO: Merge transform aggregate and transform attribute
       def transform_aggregate(key, aggregate, result)
-        result.each_with_object({}) do |(keys, value), object|
+        return {} unless result.present?
+
+        hashes = result.map do |(keys, value)|
           with_zipped = build_keys(key, keys)
           with_zipped.append(aggregate)
-          hash = with_zipped.reverse.inject(value) { |a, n| { n => a } }
-          object.deep_merge!(hash)
+          with_zipped.reverse.inject(value) { |a, n| { n => a } }
         end
+
+        merge(hashes)
+      end
+
+      def merge(hashes)
+        root_key = hashes.first.keys.first
+        result = hashes.each_with_object({}) do |hash, object|
+          inner = hash[root_key]
+          inner_key = inner.keys.first
+          object[inner_key] = inner.values.first
+        end
+        { root_key => result }
       end
 
       def transform_attribute(key, aggregate, attribute, result)
+        # TODO: Inspect performance of this operation
         result.each_with_object({}) do |(keys, value), object|
           with_zipped = build_keys(key, keys)
           with_zipped.append(aggregate)
