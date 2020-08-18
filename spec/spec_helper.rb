@@ -10,13 +10,6 @@ require 'gqli/dsl'
 
 Dir["#{File.dirname(__FILE__)}/graphql/support/**/*.rb"].sort.each { |f| require f }
 
-require 'test-prof'
-TestProf.configure do |config|
-  config.output_dir = 'tmp/test_prof'
-  config.timestamps = true
-  config.color = true
-end
-
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
   config.example_status_persistence_file_path = '.rspec_status'

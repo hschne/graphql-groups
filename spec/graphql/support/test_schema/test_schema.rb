@@ -5,7 +5,6 @@ require 'graphql/groups'
 
 require_relative 'db'
 require_relative 'models'
-require 'groupdate'
 
 class AuthorGroupResultType < GraphQL::Groups::Schema::GroupResultType
   aggregate :average do
