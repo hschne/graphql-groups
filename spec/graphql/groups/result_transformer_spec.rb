@@ -103,7 +103,28 @@ module GraphQL
           expect(result).to eq(output)
         end
       end
+
+      describe 'with attribute based aggregate' do
+        let(:input) {
+          { name: { average: {
+            age: {
+              'first' => 10
+            }
+          } } }
+        }
+
+        let(:output) {
+          { name: {
+            'first' => { average: { age: 10 } }
+          } }
+        }
+
+        it 'transforms item' do
+          result = described_class.new.run(input)
+
+          expect(result).to eq(output)
+        end
+      end
     end
   end
 end
-
