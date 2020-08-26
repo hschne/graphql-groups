@@ -68,13 +68,9 @@ module GraphQL
       end
 
       def merge(hashes)
-        root_key = hashes.first.keys.first
-        result = hashes.each_with_object({}) do |hash, object|
-          inner = hash[root_key]
-          inner_key = inner.keys.first
-          object[inner_key] = inner.values.first
+        hashes.each_with_object({}) do |hash, object|
+          object.deep_merge!(hash)
         end
-        { root_key => result }
       end
 
       def build_keys(key, keys)

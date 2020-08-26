@@ -84,14 +84,18 @@ module GraphQL
 
       describe 'with nested items' do
         let(:input) {
-          { %i[name age] => { count: { %w[first 10] => 1 } } }
+          { %i[name age] => { count: {
+            %w[first 10] => 1,
+            %w[first 20] => 1
+          } } }
         }
 
         let(:output) {
           { name: {
             'first' => { nested: {
               age: {
-                '10' => { count: 1 }
+                '10' => { count: 1 },
+                '20' => { count: 1 }
               }
             } }
           } }
@@ -108,14 +112,16 @@ module GraphQL
         let(:input) {
           { name: { average: {
             age: {
-              'first' => 10
+              'first' => 10,
+              'second' => 10
             }
           } } }
         }
 
         let(:output) {
           { name: {
-            'first' => { average: { age: 10 } }
+            'first' => { average: { age: 10 } },
+            'second' => { average: { age: 10 } }
           } }
         }
 
