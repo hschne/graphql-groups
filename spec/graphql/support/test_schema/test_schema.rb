@@ -2,6 +2,7 @@
 
 require 'graphql'
 require 'graphql/groups'
+require 'groupdate'
 
 require_relative 'db'
 require_relative 'models'
@@ -40,14 +41,7 @@ class BookGroupType < GraphQL::Groups::Schema::GroupType
   end
 
   def published_at(scope:, interval:)
-    case interval
-    when 'month'
-      scope.group("strftime('%Y-%m-01 00:00:00 UTC', published_at)")
-    when 'year'
-      scope.group("strftime('%Y-01-01 00:00:00 UTC', published_at)")
-    else
-      scope.group("strftime('%Y-%m-%d 00:00:00 UTC', published_at)")
-    end
+    scope.group_by_period(interval.to_sym, :published_at)
   end
 end
 

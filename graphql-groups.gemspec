@@ -38,6 +38,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rake', '~> 13.0'
   spec.add_development_dependency 'rspec', '~> 3.0'
   spec.add_development_dependency 'rubocop', '~> 0.88'
+  spec.add_development_dependency 'groupdate', '~> 5.2.1'
   spec.add_development_dependency 'rubocop-rspec', '~> 1.42'
   spec.add_development_dependency 'simplecov', '~> 0.18.5'
   spec.add_development_dependency 'sqlite3', '~> 1.4.2'

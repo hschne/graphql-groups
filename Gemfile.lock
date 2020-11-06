@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    graphql-groups (0.1.1)
+    graphql-groups (0.1.2)
       graphql (~> 1, > 1.9)
 
 GEM
@@ -36,6 +36,8 @@ GEM
       http (> 0.8, < 3.0)
       multi_json (~> 1)
     graphql (1.11.1)
+    groupdate (5.2.1)
+      activesupport (>= 5)
     gruff (0.10.0)
       histogram
       rmagick
@@ -114,6 +116,7 @@ DEPENDENCIES
   database_cleaner-active_record (~> 1.8)
   gqli (~> 1.0)
   graphql-groups!
+  groupdate (~> 5.2.1)
   gruff (~> 0.10)
   rake (~> 13.0)
   rspec (~> 3.0)
