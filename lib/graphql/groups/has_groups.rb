@@ -64,6 +64,7 @@ module GraphQL
 
             field :group_by, own_group_type, null: false, camelize: true
 
+            # TODO: Rename nested to group by
             def group_by
               group_result[1][:nested]
             end
