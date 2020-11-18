@@ -35,8 +35,8 @@ module GraphQL
         define_method name do |lookahead: nil|
           pending_queries = LookaheadParser.parse(lookahead, context)
           base_query = type.authorized_new(object, context).scope
-          query_resuls = Executor.call(base_query, pending_queries)
-          GraphQL::Groups::ResultTransformer.new.run(query_resuls)
+          query_results = Executor.call(base_query, pending_queries)
+          GraphQL::Groups::ResultTransformer.new.run(query_results)
         end
       end
     end

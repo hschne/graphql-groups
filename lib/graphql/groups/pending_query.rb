@@ -6,17 +6,29 @@ class PendingQuery
   attr_reader :query
 
   def initialize(key, aggregate, proc)
-    @key = key
-    @aggregate = aggregate
+    @key = wrap(key)
+    @aggregate = wrap(aggregate)
     @query = proc
   end
 
   def execute(scope)
-    result = if @aggregate == :count
+    result = if @aggregate.size == 1
                @query.call(scope)
              else
                @query.call(scope, attribute: @aggregate[1])
              end
     QueryResult.new(@key, @aggregate, result)
+  end
+
+  private
+
+  def wrap(object)
+    if object.nil?
+      []
+    elsif object.respond_to?(:to_ary)
+      object.to_ary || [object]
+    else
+      [object]
+    end
   end
 end
