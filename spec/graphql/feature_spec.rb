@@ -5,7 +5,8 @@ require 'spec_helper'
 RSpec.describe 'feature', type: :feature do
   describe 'grouping' do
     it 'with default query should return' do
-      Author.create(name: 'name', age: 30)
+      Author.create(name: 'a', age: 30)
+      Author.create(name: 'b', age: 30)
 
       query = GQLi::DSL.query {
         authorGroups {
@@ -19,7 +20,7 @@ RSpec.describe 'feature', type: :feature do
       result = GroupsSchema.execute(query)
 
       group = result['data']['authorGroups']['name'][0]
-      expect(group['key']).to eq('name')
+      expect(group['key']).to eq('a')
       expect(group['count']).to eq(1)
     end
 

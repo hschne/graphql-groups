@@ -15,6 +15,8 @@ require 'graphql/groups/has_groups'
 require 'graphql/groups/schema/group_result_type'
 require 'graphql/groups/schema/group_type'
 
+require 'graphql/groups/query_result'
+require 'graphql/groups/pending_query'
 require 'graphql/groups/lookahead_parser'
 require 'graphql/groups/result_transformer'
 require 'graphql/groups/executor'
@@ -31,10 +33,10 @@ module GraphQL
         field name, type, extras: [:lookahead], null: false, **options
 
         define_method name do |lookahead: nil|
-          execution_plan = GraphQL::Groups::LookaheadParser.parse(lookahead)
+          pending_queries = LookaheadParser.parse(lookahead, context)
           base_query = type.authorized_new(object, context).scope
-          results = Executor.call(base_query, execution_plan)
-          GraphQL::Groups::ResultTransformer.new.run(results)
+          query_resuls = Executor.call(base_query, pending_queries)
+          GraphQL::Groups::ResultTransformer.new.run(query_resuls)
         end
       end
     end

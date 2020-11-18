@@ -4,21 +4,19 @@ module GraphQL
   module Groups
     class Executor
       class << self
-        def call(base_query, execution_plan)
-          execution_plan.each_with_object({}) do |(key, value), object|
-            object.merge!(execute(base_query, key, value))
-          end
+        def call(base_query, pending_queries)
+          pending_queries.map { |pending_query| pending_query.execute(base_query) }
         end
 
         def execute(scope, key, value)
-          group_query = value[:proc].call(scope: scope)
+          group_query = value[:query].call(scope: scope)
           results = value[:aggregates].each_with_object({}) do |(aggregate_key, aggregate), object|
             if aggregate_key == :count
-              object[:count] = aggregate[:proc].call(scope: group_query)
+              object[:count] = aggregate[:query].call(scope: group_query)
             else
               object[aggregate_key] ||= {}
               aggregate[:attributes].each do |attribute|
-                result = aggregate[:proc].call(scope: group_query, attribute: attribute)
+                result = aggregate[:query].call(scope: group_query, attribute: attribute)
                 object[aggregate_key][attribute] = result
               end
             end

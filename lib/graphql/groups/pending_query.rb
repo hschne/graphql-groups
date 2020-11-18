@@ -1,24 +1,22 @@
+# frozen_string_literal: true
 
 class PendingQuery
   attr_reader :key
   attr_reader :aggregate
-  attr_reader :proc
+  attr_reader :query
 
   def initialize(key, aggregate, proc)
     @key = key
     @aggregate = aggregate
-    @proc = proc
+    @query = proc
   end
 
-  def base=(value)
-
-  end
-
-  def aggregate=(aggregate)
-
-  end
-
-  def execute
-
+  def execute(scope)
+    result = if @aggregate == :count
+               @query.call(scope)
+             else
+               @query.call(scope, attribute: @aggregate[1])
+             end
+    QueryResult.new(@key, @aggregate, result)
   end
 end

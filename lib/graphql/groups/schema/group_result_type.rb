@@ -21,7 +21,7 @@ module GraphQL
           group_result[0]
         end
 
-        def count(scope:, **_)
+        def count(scope:, **)
           scope.size
         end
 
