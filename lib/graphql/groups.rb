@@ -17,6 +17,7 @@ require 'graphql/groups/schema/group_type'
 
 require 'graphql/groups/query_result'
 require 'graphql/groups/pending_query'
+require 'graphql/groups/query_builder_context'
 require 'graphql/groups/query_builder'
 require 'graphql/groups/result_transformer'
 
@@ -33,7 +34,7 @@ module GraphQL
 
         define_method name do |lookahead: nil|
           base_query = type.authorized_new(object, context).scope
-          pending_queries = QueryBuilder.parse(lookahead, context, base_query)
+          pending_queries = QueryBuilder.parse(lookahead, context)
           query_results = pending_queries.map { |pending_query| pending_query.execute(base_query) }
           GraphQL::Groups::ResultTransformer.new.run(query_results)
         end
