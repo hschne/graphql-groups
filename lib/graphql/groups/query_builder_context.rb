@@ -10,9 +10,9 @@ class QueryBuilderContext
   end
 
   def update(grouping, proc)
-    @grouping.append(grouping)
-    @proc = combine_procs(@proc, proc)
-    QueryBuilderContext.new(@grouping, @proc)
+    new_grouping = @grouping + [grouping]
+    combined_proc = combine_procs(@proc, proc)
+    QueryBuilderContext.new(new_grouping, combined_proc)
   end
 
   def combine_procs(base_proc, new_proc)
