@@ -19,13 +19,21 @@ module GraphQL
         keys.each_with_index do |key, index|
           object[key] ||= {}
           query_result.result_hash.each do |grouping_result|
-            group_result_key = grouping_result[0]
+            group_result_keys = grouping_result[0]
             group_result_value = grouping_result[1]
-            object[key][group_result_key] ||= {}
-            object[key][group_result_key][query_result.aggregate[0]] = group_result_value
+            if !group_result_keys.is_a?(Array)
+              object[key][group_result_keys] ||= {}
+              object[key][group_result_keys][query_result.aggregate[0]] = group_result_value
+            else
+              object[key][group_result_keys[index]] ||= {}
+              object[key][group_result_keys[index]][:group_by] ||= {}
+              object[key][group_result_keys[index]][:group_by][query_result.aggregate[0]] = group_result_value
+            end
           end
         end
       end
+
+
 
       # def transform_results(results)
       #   # Because group query returns its results in a way that is not usable by GraphQL we need to transform these results

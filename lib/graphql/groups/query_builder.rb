@@ -50,7 +50,7 @@ module GraphQL
                               .map do |selection|
           selection.field.own_attributes.each do |attribute|
             aggregate_proc = proc_from_selection(selection.field, selection.arguments)
-            combined = combine_procs(base_query, aggregate_proc)
+            combined = combine_procs(context.current_proc, aggregate_proc)
             PendingQuery.new(context.grouping, [selection.name, attribute], combined)
           end
         end
@@ -58,8 +58,8 @@ module GraphQL
       end
 
       def combine_procs(base_proc, new_proc)
-        proc do |**kwargs|
-          base = base_proc.call(kwargs)
+        proc do |scope|
+          base = base_proc.call(scope: scope)
           new_proc.call(scope: base)
         end
       end

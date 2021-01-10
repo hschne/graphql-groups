@@ -66,7 +66,7 @@ module GraphQL
 
             # TODO: Rename nested to group by
             def group_by
-              group_result[1][:nested]
+              group_result[1][:group_by]
             end
           end)
         end
