@@ -19,7 +19,7 @@ class QueryBuilderContext
     return new_proc unless base_proc
 
     proc do |scope|
-      base = @proc.call(scope: scope)
+      base = base_proc.call(scope: scope)
       new_proc.call(scope: base)
     end
   end
