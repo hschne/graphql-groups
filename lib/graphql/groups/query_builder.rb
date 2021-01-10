@@ -42,7 +42,7 @@ module GraphQL
                           .map do |selection|
           field = selection.field
           count_proc = proc { |**kwargs| field.owner.send(:new, {}, nil).public_send(field.query_method, **kwargs) }
-          combined = combine_procs(context.proc, count_proc)
+          combined = combine_procs(context.current_proc, count_proc)
           PendingQuery.new(context.grouping, selection.name, combined)
         end
         aggregate_queries = aggregate_selections
@@ -58,8 +58,8 @@ module GraphQL
       end
 
       def combine_procs(base_proc, new_proc)
-        proc do |scope|
-          base = base_proc.call(scope: scope)
+        proc do |**kwargs|
+          base = base_proc.call(kwargs)
           new_proc.call(scope: base)
         end
       end
