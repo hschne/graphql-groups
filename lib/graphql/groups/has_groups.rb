@@ -17,7 +17,6 @@ module GraphQL
       module ClassMethods
         attr_reader :class_scope
 
-        # TODO: Error if there are no groupings defined
         def by(name, **options, &block)
           query_method = options[:query_method] || name
           resolver_method = "resolve_#{query_method}".to_sym
@@ -31,7 +30,6 @@ module GraphQL
             kwargs[:scope].group(name)
           end
 
-          # TODO: Warn / Disallow overwriting these resolver methods
           define_method resolver_method do |**_|
             group[name]
           end

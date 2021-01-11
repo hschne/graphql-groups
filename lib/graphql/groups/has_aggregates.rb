@@ -11,7 +11,6 @@ module GraphQL
         def aggregate(name, *_, **options, &block)
           aggregate_type = aggregate_type(name)
 
-          # TODO: Handle method name conflicts, or no query method found error
           resolve_method = "resolve_#{name}".to_sym
           query_method = options[:query_method] || name
           field = aggregate_field name, aggregate_type,
@@ -21,7 +20,6 @@ module GraphQL
                                   **options, &block
           aggregate_type.add_fields(field.own_attributes)
 
-          # TODO: Avoid overwriting existing method
           define_method query_method do |**kwargs|
             scope = kwargs[:scope]
             attribute = kwargs[:attribute]
@@ -42,7 +40,6 @@ module GraphQL
         private
 
         def aggregate_type(name)
-          # TODO: Handle no aggregate type found
           name = "#{name}AggregateType".upcase_first
           own_aggregate_types[name] ||= Class.new(Schema::AggregateType) do
             graphql_name name
