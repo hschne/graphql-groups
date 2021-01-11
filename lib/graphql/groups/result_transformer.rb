@@ -16,6 +16,8 @@ module GraphQL
 
       def transform_result(query_result, object)
         keys = query_result.key
+        return object[keys[0]] = [] if query_result.result_hash.empty?
+
         query_result.result_hash.each do |grouping_result|
           group_result_keys = grouping_result[0]
           group_result_value = grouping_result[1]

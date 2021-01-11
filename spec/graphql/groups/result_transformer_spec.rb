@@ -7,9 +7,7 @@ module GraphQL
     RSpec.describe ResultTransformer do
       describe 'with non-array key' do
         let(:input) {
-          { name: { count: {
-            'first' => 1
-          } } }
+          [QueryResult.new(:name, :count, { 'first' => 1 })]
         }
 
         let(:output) {
@@ -27,9 +25,7 @@ module GraphQL
 
       describe 'with null key' do
         let(:input) {
-          { name: { count: {
-            nil => 1
-          } } }
+          [QueryResult.new(:name, :count, { nil => 1 })]
         }
 
         let(:output) {
@@ -47,8 +43,7 @@ module GraphQL
 
       describe 'with no results' do
         let(:input) {
-          { name: { count: {
-          } } }
+          [QueryResult.new(:name, :count, {})]
         }
 
         let(:output) { { name: [] } }
@@ -62,10 +57,7 @@ module GraphQL
 
       describe 'with multiple items' do
         let(:input) {
-          { name: { count: {
-            ['first'] => 1,
-            ['second'] => 2
-          } } }
+          [QueryResult.new(:name, :count, { 'first' => 1, 'second' => 2 })]
         }
 
         let(:output) {
@@ -84,17 +76,39 @@ module GraphQL
 
       describe 'with nested items' do
         let(:input) {
-          { %i[name age] => { count: { %w[first 10] => 1 } } }
+          [QueryResult.new(%i[name age], :count, { ['first', 1] => 1 })]
         }
 
         let(:output) {
           { name: {
-            'first' => { nested: {
+            'first' => { group_by: {
               age: {
-                '10' => { count: 1 }
+                1 => { count: 1 }
               }
             } }
           } }
+        }
+
+        it 'transforms items' do
+          result = described_class.new.run(input)
+
+          expect(result).to eq(output)
+        end
+      end
+      describe 'with attribute aggregates' do
+        let(:input) {
+          [QueryResult.new(:name, %i[average age], { 'first' => 1 })]
+        }
+
+        let(:output) {
+          { name:
+              {
+                'first' => {
+                  average: {
+                    age: 1
+                  }
+                }
+              } }
         }
 
         it 'transforms items' do

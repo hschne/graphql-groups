@@ -24,6 +24,23 @@ RSpec.describe 'feature', type: :feature do
       expect(group['count']).to eq(1)
     end
 
+    it 'with empty query' do
+      query = GQLi::DSL.query {
+        authorGroups {
+          name {
+            key
+            count
+          }
+        }
+      }.to_gql
+
+      result = GroupsSchema.execute(query)
+
+      expect(result['errors']).to be_nil
+      group = result['data']['authorGroups']['name']
+      expect(group).to eq([])
+    end
+
     it 'with custom query should return data' do
       Author.create(name: 'name', age: 35)
 
