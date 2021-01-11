@@ -131,7 +131,7 @@ RSpec.describe 'feature', type: :feature do
       result = GroupsSchema.execute(query)
 
       group = result['data']['statistics']['books']['publishedAt'][0]
-      expect(group['key']).to eq(time.to_s)
+      expect(group['key']).to eq('2020-01-01')
       expect(group['count']).to eq(1)
     end
 
@@ -154,10 +154,10 @@ RSpec.describe 'feature', type: :feature do
       }.to_gql
 
       require 'timeout'
-      result = Timeout.timeout(3) { GroupsSchema.execute(query) }
+      result = Timeout.timeout(2) { GroupsSchema.execute(query) }
 
       group = result['data']['statistics']['books']['publishedAt'][0]
-      expect(group['key']).to eq('2020-01-01')
+      expect(group['key']).to eq('1970-01-01')
       expect(group['count']).to eq(1)
     end
   end

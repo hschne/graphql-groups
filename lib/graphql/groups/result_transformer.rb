@@ -20,7 +20,14 @@ module GraphQL
           group_result_keys = grouping_result[0]
           group_result_value = grouping_result[1]
           inner_hash = create_nested_result(keys, group_result_keys, object)
-          inner_hash[query_result.aggregate[0]] = group_result_value
+          if query_result.aggregate.length == 1
+            inner_hash[query_result.aggregate[0]] = group_result_value
+          else
+            aggregate_type = query_result.aggregate[0]
+            aggregate_attribute = query_result.aggregate[1]
+            inner_hash[aggregate_type] ||= {}
+            inner_hash[aggregate_type][aggregate_attribute] ||= group_result_value
+          end
         end
       end
 

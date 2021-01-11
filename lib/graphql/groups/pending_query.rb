@@ -13,9 +13,9 @@ class PendingQuery
 
   def execute(scope)
     result = if @aggregate.size == 1
-               @query.call(scope)
+               @query.call(scope: scope)
              else
-               @query.call(scope, attribute: @aggregate[1])
+               @query.call(scope: scope, attribute: @aggregate[1])
              end
     QueryResult.new(@key, @aggregate, result)
   end
