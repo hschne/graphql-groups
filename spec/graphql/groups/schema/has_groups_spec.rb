@@ -5,10 +5,16 @@ module GraphQL
     module Schema
       RSpec.describe HasGroups do
         describe 'by' do
+
+          before do
+            GraphQL::Groups::GroupTypeRegistry.instance.clear
+          end
+
           it 'defines a method with query method parameter' do
             item = Class.new(GraphQL::Schema::Object) do
               graphql_name 'name'
               include HasGroups
+              field_class(own_field_type)
 
               by(:name, query_method: :test)
             end
@@ -20,6 +26,7 @@ module GraphQL
             item = Class.new(GraphQL::Schema::Object) do
               graphql_name 'name'
               include HasGroups
+              field_class(own_field_type)
 
               by(:name)
             end
@@ -31,6 +38,7 @@ module GraphQL
             item = Class.new(GraphQL::Schema::Object) do
               graphql_name 'name'
               include HasGroups
+              field_class(own_field_type)
 
               by(:name)
             end
@@ -42,6 +50,7 @@ module GraphQL
             item = Class.new(GraphQL::Schema::Object) do
               graphql_name 'name'
               include HasGroups
+              field_class(own_field_type)
 
               by(:name)
             end
@@ -49,11 +58,34 @@ module GraphQL
             expect(item.fields['name']).not_to be_nil
           end
 
+          it 'uses user field class' do
+            field_class = Class.new(GraphQL::Schema::Field) do
+              def self.name
+                'FieldClass'
+              end
+            end
+
+            base_object = Class.new(GraphQL::Schema::Object) do
+              field_class field_class
+            end
+
+            item = Class.new(base_object) do
+              graphql_name 'name'
+              include HasGroups
+              field_class(own_field_type)
+
+              by(:name)
+            end
+
+            expect(item.fields['name']).to be_a(field_class)
+          end
+
           context 'with no group result type' do
             it 'uses the field default result type' do
               item = Class.new(GraphQL::Schema::Object) do
                 graphql_name 'name'
                 include HasGroups
+                field_class(own_field_type)
 
                 by(:name)
               end
@@ -70,6 +102,7 @@ module GraphQL
               item = Class.new(GraphQL::Schema::Object) do
                 graphql_name 'name'
                 include HasGroups
+                field_class(own_field_type)
 
                 result_type { custom_result_type }
 

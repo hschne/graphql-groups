@@ -7,6 +7,8 @@ require 'groupdate'
 require_relative 'db'
 require_relative 'models'
 
+class BaseField < GraphQL::Schema::Field; end
+
 class AuthorGroupResultType < GraphQL::Groups::Schema::GroupResultType
   aggregate :average do
     attribute :age

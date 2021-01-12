@@ -3,203 +3,227 @@
 require 'spec_helper'
 
 RSpec.describe 'feature', type: :feature do
-  describe 'grouping' do
-    it 'with default query should return' do
-      Author.create(name: 'a', age: 30)
-      Author.create(name: 'b', age: 30)
+  it 'suports count query' do
+    Author.create(name: 'a', age: 30)
+    Author.create(name: 'b', age: 30)
 
-      query = GQLi::DSL.query {
-        authorGroups {
-          name {
-            key
-            count
-          }
+    query = GQLi::DSL.query {
+      authorGroups {
+        name {
+          key
+          count
         }
-      }.to_gql
+      }
+    }.to_gql
 
-      result = GroupsSchema.execute(query)
+    result = GroupsSchema.execute(query)
 
-      group = result['data']['authorGroups']['name'][0]
-      expect(group['key']).to eq('a')
-      expect(group['count']).to eq(1)
-    end
+    group = result['data']['authorGroups']['name'][0]
+    expect(group['key']).to eq('a')
+    expect(group['count']).to eq(1)
+  end
 
-    it 'with empty query' do
-      query = GQLi::DSL.query {
-        authorGroups {
-          name {
-            key
-            count
-          }
+  it 'supports group based on field name' do
+    query = GQLi::DSL.query {
+      authorGroups {
+        name {
+          key
+          count
         }
-      }.to_gql
+      }
+    }.to_gql
 
-      result = GroupsSchema.execute(query)
+    result = GroupsSchema.execute(query)
 
-      expect(result['errors']).to be_nil
-      group = result['data']['authorGroups']['name']
-      expect(group).to eq([])
-    end
+    expect(result['errors']).to be_nil
+    group = result['data']['authorGroups']['name']
+    expect(group).to eq([])
+  end
 
-    it 'with custom query should return data' do
-      Author.create(name: 'name', age: 35)
+  it 'supports custom grouping queries' do
+    Author.create(name: 'name', age: 35)
 
-      query = GQLi::DSL.query {
-        authorGroups {
-          age {
-            key
-            count
-          }
+    query = GQLi::DSL.query {
+      authorGroups {
+        age {
+          key
+          count
         }
-      }.to_gql
+      }
+    }.to_gql
 
-      result = GroupsSchema.execute(query)
+    result = GroupsSchema.execute(query)
 
-      group = result['data']['authorGroups']['age'][0]
-      expect(group['key']).to eq('30-40')
-      expect(group['count']).to eq(1)
-    end
+    group = result['data']['authorGroups']['age'][0]
+    expect(group['key']).to eq('30-40')
+    expect(group['count']).to eq(1)
+  end
 
-    it 'with nested query should return' do
-      Author.create(name: 'name', age: 30)
+  it 'supports multiple nested level results' do
+    Author.create(name: 'name', age: 30)
 
-      query = GQLi::DSL.query {
-        authorGroups {
-          name {
-            key
-            count
-            groupBy {
-              age {
-                key
-                count
-              }
-            }
-          }
-        }
-      }.to_gql
-
-      result = GroupsSchema.execute(query)
-
-      group = result['data']['authorGroups']['name'][0]['groupBy']['age'][0]
-      expect(group['key']).to eq('30-40')
-      expect(group['count']).to eq(1)
-    end
-
-    it 'with average should return data' do
-      Author.create(name: 'name', age: 5)
-      Author.create(name: 'name', age: 10)
-
-      query = GQLi::DSL.query {
-        authorGroups {
-          name {
-            key
-            average {
-              age
-            }
-          }
-        }
-      }.to_gql
-
-      result = GroupsSchema.execute(query)
-
-      group = result['data']['authorGroups']['name'][0]
-      expect(group['key']).to eq('name')
-      expect(group['average']['age']).to eq(7.5)
-    end
-
-    it 'supports using object in scope' do
-      author = Author.create(name: 'name')
-      Book.create(author: author, name: 'name')
-
-      query = GQLi::DSL.query {
-        statistics {
-          books {
-            name {
+    query = GQLi::DSL.query {
+      authorGroups {
+        name {
+          key
+          count
+          groupBy {
+            age {
               key
               count
             }
           }
         }
-      }.to_gql
+      }
+    }.to_gql
 
-      result = GroupsSchema.execute(query)
+    result = GroupsSchema.execute(query)
 
-      group = result['data']['statistics']['books']['name'][0]
-      expect(group['key']).to eq('name')
-      expect(group['count']).to eq(1)
-    end
+    upper_result = result['data']['authorGroups']['name'][0]
+    expect(upper_result['key']).to eq('name')
+    expect(upper_result['count']).to eq(1)
+    inner_result = result['data']['authorGroups']['name'][0]['groupBy']['age'][0]
+    expect(inner_result['key']).to eq('30-40')
+    expect(inner_result['count']).to eq(1)
+  end
 
-    it 'supports arguments data' do
-      author = Author.create(name: 'name')
-      time = Time.parse('2020-01-01 00:00:00 UTC')
-      Book.create(author: author, published_at: time)
+  it 'supports only inner level result' do
+    Author.create(name: 'name', age: 30)
 
-      query = GQLi::DSL.query {
-        statistics {
-          books {
-            publishedAt(interval: 'day') {
+    query = GQLi::DSL.query {
+      authorGroups {
+        name {
+          groupBy {
+            age {
               key
               count
             }
           }
         }
-      }.to_gql
+      }
+    }.to_gql
 
-      result = GroupsSchema.execute(query)
+    result = GroupsSchema.execute(query)
 
-      group = result['data']['statistics']['books']['publishedAt'][0]
-      expect(group['key']).to eq('2020-01-01')
-      expect(group['count']).to eq(1)
-    end
+    group = result['data']['authorGroups']['name'][0]['groupBy']['age'][0]
+    expect(group['key']).to eq('30-40')
+    expect(group['count']).to eq(1)
+  end
 
-    it 'supports context data' do
-      author = Author.create(name: 'name')
-      time = Time.parse('2020-01-01 00:00:00 UTC')
-      Book.create(author: author, published_at: time)
+  it 'supports average aggregate' do
+    Author.create(name: 'name', age: 5)
+    Author.create(name: 'name', age: 10)
 
-      context = { default_interval: 'day' }
-      query = GQLi::DSL.query {
-        statistics {
-          books {
-            publishedAt {
-              key
-              count
-            }
+    query = GQLi::DSL.query {
+      authorGroups {
+        name {
+          key
+          average {
+            age
           }
         }
-      }.to_gql
+      }
+    }.to_gql
 
-      result = GroupsSchema.execute(query, context: context)
+    result = GroupsSchema.execute(query)
 
-      group = result['data']['statistics']['books']['publishedAt'][0]
-      expect(group['key']).to eq('2020-01-01')
-      expect(group['count']).to eq(1)
-    end
+    group = result['data']['authorGroups']['name'][0]
+    expect(group['key']).to eq('name')
+    expect(group['average']['age']).to eq(7.5)
+  end
 
-    it 'performs well with large hashes' do
-      author = Author.create(name: 'name')
-      # Groupdate will fill the space between the dates automatically, which results in ginormous result sets for the
-      # queries
-      Book.create(author: author, published_at: Time.parse('1970-01-01 00:00:00 UTC'))
-      Book.create(author: author, published_at: Time.parse('2020-01-01 00:00:00 UTC'))
+  it 'supports using object in scope' do
+    author = Author.create(name: 'name')
+    Book.create(author: author, name: 'name')
 
-      query = GQLi::DSL.query {
-        statistics {
-          books {
-            publishedAt(interval: 'day') {
-              key
-              count
-            }
+    query = GQLi::DSL.query {
+      statistics {
+        books {
+          name {
+            key
+            count
           }
         }
-      }.to_gql
+      }
+    }.to_gql
 
-      require 'timeout'
-      result = Timeout.timeout(2) { GroupsSchema.execute(query) }
+    result = GroupsSchema.execute(query)
 
-      group = result['data']['statistics']['books']['publishedAt'][0]
-      expect(group['key']).to eq('1970-01-01')
-      expect(group['count']).to eq(1)
-    end
+    group = result['data']['statistics']['books']['name'][0]
+    expect(group['key']).to eq('name')
+    expect(group['count']).to eq(1)
+  end
+
+  it 'supports arguments data' do
+    author = Author.create(name: 'name')
+    time = Time.parse('2020-01-01 00:00:00 UTC')
+    Book.create(author: author, published_at: time)
+
+    query = GQLi::DSL.query {
+      statistics {
+        books {
+          publishedAt(interval: 'day') {
+            key
+            count
+          }
+        }
+      }
+    }.to_gql
+
+    result = GroupsSchema.execute(query)
+
+    group = result['data']['statistics']['books']['publishedAt'][0]
+    expect(group['key']).to eq('2020-01-01')
+    expect(group['count']).to eq(1)
+  end
+
+  it 'supports context data' do
+    author = Author.create(name: 'name')
+    time = Time.parse('2020-01-01 00:00:00 UTC')
+    Book.create(author: author, published_at: time)
+
+    context = { default_interval: 'day' }
+    query = GQLi::DSL.query {
+      statistics {
+        books {
+          publishedAt {
+            key
+            count
+          }
+        }
+      }
+    }.to_gql
+
+    result = GroupsSchema.execute(query, context: context)
+
+    group = result['data']['statistics']['books']['publishedAt'][0]
+    expect(group['key']).to eq('2020-01-01')
+    expect(group['count']).to eq(1)
+  end
+
+  it 'performs well with large hashes' do
+    author = Author.create(name: 'name')
+    # Groupdate will fill the space between the dates automatically, which results in ginormous result sets for the
+    # queries
+    Book.create(author: author, published_at: Time.parse('1970-01-01 00:00:00 UTC'))
+    Book.create(author: author, published_at: Time.parse('2020-01-01 00:00:00 UTC'))
+
+    query = GQLi::DSL.query {
+      statistics {
+        books {
+          publishedAt(interval: 'day') {
+            key
+            count
+          }
+        }
+      }
+    }.to_gql
+
+    require 'timeout'
+    result = Timeout.timeout(2) { GroupsSchema.execute(query) }
+
+    group = result['data']['statistics']['books']['publishedAt'][0]
+    expect(group['key']).to eq('1970-01-01')
+    expect(group['count']).to eq(1)
   end
 end

@@ -13,6 +13,10 @@ module GraphQL
         @types = {}
       end
 
+      def clear
+        @types = {}
+      end
+
       def register(type, derived)
         types[type] = derived
       end

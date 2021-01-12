@@ -37,7 +37,7 @@ module GraphQL
         end
 
         def group_field(*args, **kwargs, &block)
-          field_defn = own_field_type.from_options(*args, owner: self, **kwargs, &block)
+          field_defn = field_class.from_options(*args, owner: self, **kwargs, &block)
           add_field(field_defn)
           field_defn
         end
