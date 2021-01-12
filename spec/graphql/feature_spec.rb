@@ -223,8 +223,8 @@ RSpec.describe 'feature', type: :feature do
     expect(group['count']).to eq(1)
   end
 
-  # Only run this on a case by case basis, don't wanna slow down CI
-  skip 'performs well with large hashes' do
+  it 'performs well with large hashes' do
+    skip 'Only run this on a case by case basis, dont wanna slow down CI'
     author = Author.create(name: 'name')
     # Groupdate will fill the space between the dates automatically, which results in ginormous result sets for the
     # queries

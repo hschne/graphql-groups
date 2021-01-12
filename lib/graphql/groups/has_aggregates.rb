@@ -20,10 +20,8 @@ module GraphQL
                                   **options, &block
           aggregate_type.add_fields(field.own_attributes)
 
-          define_method query_method do |**kwargs|
-            scope = kwargs[:scope]
-            attribute = kwargs[:attribute]
-            scope.public_send(name, attribute)
+          define_method query_method do |scope:, **kwargs|
+            scope.public_send(name, **kwargs)
           end
 
           define_method resolve_method do
