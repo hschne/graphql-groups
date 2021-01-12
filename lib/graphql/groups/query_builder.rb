@@ -15,7 +15,8 @@ module GraphQL
 
       def group_selections(lookahead = @lookahead, current_context = QueryBuilderContext.new)
         selections = lookahead.selections
-        group_selections = selections.select { |selection| selection.field.is_a?(GraphQL::Groups::Schema::GroupField) }
+        group_field_type = lookahead.field.type.of_type.field_class
+        group_selections = selections.select { |selection| selection.field.is_a?(group_field_type) }
         queries = group_selections.each_with_object([]) do |selection, object|
           field_proc = proc_from_selection(selection.field, selection.arguments)
           context = current_context.update(selection.name, field_proc)

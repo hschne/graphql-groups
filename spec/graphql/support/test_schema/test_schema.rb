@@ -40,7 +40,8 @@ class BookGroupType < GraphQL::Groups::Schema::GroupType
     argument :interval, String, required: false
   end
 
-  def published_at(scope:, interval:)
+  def published_at(scope:, interval: nil)
+    interval ||= context[:default_interval]
     scope.group_by_period(interval.to_sym, :published_at)
   end
 end

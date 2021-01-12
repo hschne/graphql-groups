@@ -152,6 +152,30 @@ RSpec.describe 'feature', type: :feature do
       expect(group['count']).to eq(1)
     end
 
+    it 'supports context data' do
+      author = Author.create(name: 'name')
+      time = Time.parse('2020-01-01 00:00:00 UTC')
+      Book.create(author: author, published_at: time)
+
+      context = { default_interval: 'day' }
+      query = GQLi::DSL.query {
+        statistics {
+          books {
+            publishedAt {
+              key
+              count
+            }
+          }
+        }
+      }.to_gql
+
+      result = GroupsSchema.execute(query, context: context)
+
+      group = result['data']['statistics']['books']['publishedAt'][0]
+      expect(group['key']).to eq('2020-01-01')
+      expect(group['count']).to eq(1)
+    end
+
     it 'performs well with large hashes' do
       author = Author.create(name: 'name')
       # Groupdate will fill the space between the dates automatically, which results in ginormous result sets for the
