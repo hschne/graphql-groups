@@ -59,7 +59,7 @@ RSpec.describe 'feature', type: :feature do
     expect(group['count']).to eq(1)
   end
 
-  it 'supports multiple nested level results' do
+  it 'supports outer nested level results' do
     Author.create(name: 'name', age: 30)
 
     query = GQLi::DSL.query {
@@ -82,12 +82,34 @@ RSpec.describe 'feature', type: :feature do
     upper_result = result['data']['authorGroups']['name'][0]
     expect(upper_result['key']).to eq('name')
     expect(upper_result['count']).to eq(1)
+  end
+
+  it 'supports inner nested level results' do
+    Author.create(name: 'name', age: 30)
+
+    query = GQLi::DSL.query {
+      authorGroups {
+        name {
+          key
+          count
+          groupBy {
+            age {
+              key
+              count
+            }
+          }
+        }
+      }
+    }.to_gql
+
+    result = GroupsSchema.execute(query)
+
     inner_result = result['data']['authorGroups']['name'][0]['groupBy']['age'][0]
     expect(inner_result['key']).to eq('30-40')
     expect(inner_result['count']).to eq(1)
   end
 
-  it 'supports only inner level result' do
+  it 'supports inner level result' do
     Author.create(name: 'name', age: 30)
 
     query = GQLi::DSL.query {

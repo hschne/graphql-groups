@@ -5,7 +5,7 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/692d4125ac8548fb145e/maintainability)](https://codeclimate.com/github/hschne/graphql-groups/maintainability) 
 [![Test Coverage](https://api.codeclimate.com/v1/badges/692d4125ac8548fb145e/test_coverage)](https://codeclimate.com/github/hschne/graphql-groups/test_coverage)
 
-Statistics and aggregates built on top of [graphql-ruby](https://github.com/rmosolgo/graphql-ruby).
+Run group- and aggregation queries with [graphql-ruby](https://github.com/rmosolgo/graphql-ruby).
 
 ## Installation
 
@@ -20,13 +20,12 @@ $ bundle install
 
 ## Usage
 
-Create a new group type to specify which attributes you wish to group by inheriting from `GraphQL::Groups::GroupType`:
+Suppose you want to get the number of authors, grouped by their age. Create a new group type by inheriting from `GraphQL::Groups::GroupType`:
 
 ```ruby
-class AuthorGroupType < GraphQL::Groups::GroupType
+class AuthorGroupType < GraphQL::Groups::Schema::GroupType
   scope { Author.all }
 
-  by :name
   by :age
 end
 ```
@@ -37,15 +36,14 @@ Include the new type in your schema using the `group` keyword, and you are done.
 class QueryType < GraphQL::Schema::Object
   include GraphQL::Groups
 
-  group :author_groups, AuthorGroupType
+  group :author_group_by, AuthorGroupType
 end
 ```
 
-You can then run a query to retrieve statistical information about your data, for example the number of authors per age.
-
+You can then run the following query to retrieve the number of authors per age. 
 ```graphql
 query myQuery{ 
-  authorGroups {
+  authorGroupBy {
     age {
       key
       count
@@ -55,7 +53,7 @@ query myQuery{
 ```
 ```json
 {
-  "authorGroups":{
+  "authorGroupBy":{
     "age":[
       {
         "key":"31",
@@ -71,18 +69,21 @@ query myQuery{
 }
 ```
 
+
 ## Why? 
 
-`graphql-ruby` lacks a built in way to query statistical data of collections. It is possible to add this functionality by
-using `group_by` (see for example [here](https://dev.to/gopeter/how-to-add-a-groupby-field-to-your-graphql-api-1f2j)), 
-but this performs poorly for large amounts of data. 
+`graphql-ruby` lacks a built in way to retrieve statistical data, such as counts or averages. It is possible to implement custom queries that provide  this functionality by using `group_by` (see for example [here](https://dev.to/gopeter/how-to-add-a-groupby-field-to-your-graphql-api-1f2j)), but this performs poorly for large amounts of data. 
 
-`graphql-groups` allows you to write flexible, readable queries while leveraging your database to group and
-aggregate data. See [performance](#Performance) for a benchmark.
+`graphql-groups` allows you to write flexible, readable queries while leveraging your database to aggreate data. It does so by performing an AST analysis on your request and executing exactly the database queries needed to fulfill it. This performs much better than grouping and aggregating in memory. See [performance](#Performance) for a benchmark.
+
 
 ## Advanced Usage
 
-#### Grouping by Multiple Attributes
+For a showcase of what you can do with `graphql-groups` check out [graphql-groups-demo](https://github.com/hschne/graphql-groups-demo) 
+
+Find a hosted version of the demo app [on Heroku](https://graphql-groups-demo.herokuapp.com/). 
+
+### Grouping by Multiple Attributes
 
 This library really shines when you want to group by multiple attributes, or otherwise retrieve complex statistical information
 within a single GraphQL query. 
@@ -134,7 +135,7 @@ query myQuery{
 
 `graphql-groups` will automatically execute the required queries and return the results in a easily parsable response.
 
-#### Custom Grouping Queries
+### Custom Grouping Queries
 
 To customize which queries are executed to group items, you may specify the grouping query by creating a method of the same name in the group type.
 
@@ -150,7 +151,7 @@ class AuthorGroupType < GraphQL::Groups::Schema::GroupType
 end
 ```
 
-You may also pass arguments to custom grouping queries. In this case, pass any arguments to your group query as keyword arguments.
+You may also pass arguments to custom grouping queries. In this case, pass any arguments to your group query as keyword arguments. 
 
 ```ruby
 class BookGroupType < GraphQL::Groups::Schema::GroupType
@@ -172,6 +173,23 @@ class BookGroupType < GraphQL::Groups::Schema::GroupType
   end
 end
 ```
+
+You may access the query `context` in custom queries. As opposed to resolver methods accessing `object` is not possible and will raise an error. 
+
+```ruby
+class BookGroupType < GraphQL::Groups::Schema::GroupType
+  scope { Book.all }
+
+  by :list_price
+
+  def list_price(scope:)
+    currency = context[:currency] || ' $'
+    scope.group("list_price || ' #{currency}'")
+  end
+end
+```
+
+### Custom Scopes
 
 When defining a group type's scope you may access the parents `object` and `context`. 
 
@@ -197,8 +215,6 @@ class BookGroupType < GraphQL::Groups::Schema::GroupType
   by :name
 end
 ```
-
-For more examples see the [feature spec](./spec/graphql/feature_spec.rb) and [test schema](./spec/graphql/support/test_schema.rb)
 
 ### Custom Aggregates
 
@@ -262,9 +278,9 @@ that this libraries API will not change fundamentally from one release to the ne
 
 ## Credits
 
-![Meister](meister.png)
+<a href="https://www.meisterlabs.com"><img src="Meister.png" width="50%"></a>
 
-graphql-groups is supported by and battle-tested at [Meister](https://www.meisterlabs.com/)
+[graphql-groups](https://github.com/hschne/graphql-groups) was created at [meister](https://www.meisterlabs.com/)
 
 ## Development
 

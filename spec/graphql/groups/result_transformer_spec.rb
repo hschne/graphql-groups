@@ -95,6 +95,7 @@ module GraphQL
           expect(result).to eq(output)
         end
       end
+
       describe 'with attribute aggregates' do
         let(:input) {
           [QueryResult.new(:name, %i[average age], { 'first' => 1 })]
@@ -120,4 +121,3 @@ module GraphQL
     end
   end
 end
-
