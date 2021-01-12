@@ -154,6 +154,28 @@ RSpec.describe 'feature', type: :feature do
     expect(group['average']['age']).to eq(7.5)
   end
 
+  it 'with argument group supports average aggregate' do
+    Author.create(name: 'first', age: 5, nationality: 'aut')
+    Author.create(name: 'second', age: 10, nationality: 'aut')
+
+    query = GQLi::DSL.query {
+      authorGroups {
+        nationality {
+          key
+          average {
+            age
+          }
+        }
+      }
+    }.to_gql
+
+    result = GroupsSchema.execute(query)
+
+    group = result['data']['authorGroups']['aut'][0]
+    expect(group['key']).to eq('name')
+    expect(group['average']['age']).to eq(7.5)
+  end
+
   it 'supports using object in scope' do
     author = Author.create(name: 'name')
     Book.create(author: author, name: 'name')

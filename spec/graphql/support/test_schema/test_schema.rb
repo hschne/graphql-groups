@@ -28,8 +28,20 @@ class AuthorGroupType < GraphQL::Groups::Schema::GroupType
 
   by :age
 
+  by :nationality do
+    argument :upcase, String, required: false
+  end
+
   def age(scope:)
     scope.group("(cast(age/10 as int) * 10) || '-' || ((cast(age/10 as int) + 1) * 10)")
+  end
+
+  def nationality(scope:, upcase: false)
+    if upcase
+      scope.group('UPPER(nationality)')
+    else
+      scope.group(:nationality)
+    end
   end
 end
 

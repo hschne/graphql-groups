@@ -12,6 +12,7 @@ class CreateAuthorsTable < ActiveRecord::Migration[5.2]
     create_table :authors do |table|
       table.string :name
       table.integer :age
+      table.string :nationality
       table.timestamps
     end
   end
