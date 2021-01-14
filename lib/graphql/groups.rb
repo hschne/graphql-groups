@@ -4,6 +4,7 @@ require 'graphql/groups/version'
 
 require 'graphql'
 
+require 'graphql/groups/utils'
 require 'graphql/groups/group_type_registry'
 require 'graphql/groups/schema/group_field'
 require 'graphql/groups/schema/aggregate_field'
@@ -15,9 +16,11 @@ require 'graphql/groups/has_groups'
 require 'graphql/groups/schema/group_result_type'
 require 'graphql/groups/schema/group_type'
 
-require 'graphql/groups/lookahead_parser'
+require 'graphql/groups/query_result'
+require 'graphql/groups/pending_query'
+require 'graphql/groups/query_builder_context'
+require 'graphql/groups/query_builder'
 require 'graphql/groups/result_transformer'
-require 'graphql/groups/executor'
 
 
 module GraphQL
@@ -31,10 +34,9 @@ module GraphQL
         field name, type, extras: [:lookahead], null: false, **options
 
         define_method name do |lookahead: nil|
-          execution_plan = GraphQL::Groups::LookaheadParser.parse(lookahead, context)
-          base_query = type.authorized_new(object, context).scope
-          results = Executor.call(base_query, execution_plan)
-          GraphQL::Groups::ResultTransformer.new.run(results)
+          pending_queries = QueryBuilder.parse(lookahead, object, context)
+          query_results = pending_queries.map(&:execute)
+          GraphQL::Groups::ResultTransformer.new.run(query_results)
         end
       end
     end

@@ -3,93 +3,47 @@
 module GraphQL
   module Groups
     class ResultTransformer
-      def run(results)
-        transform_results(results)
+      def run(query_results)
+        # Sort by key length so that deeper nested queries come later
+        query_results
+          .sort_by { |query_result| query_result.key.length }
+          .each_with_object({}) do |query_result, object|
+          transform_result(query_result, object)
+        end
       end
 
       private
 
-      def transform_results(results)
-        # Because group query returns its results in a way that is not usable by GraphQL we need to transform these
-        # results and merge them into a single dataset.
-        #
-        # The result of a group query usually is a hash where they keys are the values of the columns that were grouped
-        # and the values are the aggregates. What we want is a deep hash where each level contains the statistics for
-        # that level in regards to the parent level.
-        #
-        # It all makes a lot more sense if you look at the GraphQL interface for statistics :)
-        #
-        # We accomplish this by transforming each result set to a hash and then merging them into a single one.
-        results.each_with_object({}) { |(key, value), object| object.deep_merge!(transform_result(key, value)) }
-      end
+      def transform_result(query_result, object)
+        keys = query_result.key
+        return object[keys[0]] = [] if query_result.result_hash.empty?
 
-      def transform_result(key, result)
-        is_aggregate_result = result.values[0].values[0].is_a?(Hash)
-
-        transformed = result.each_with_object({}) do |(aggregate_key, aggregate_value), object|
-          if is_aggregate_result
-            transform_aggregate_result(aggregate_key, aggregate_value, key, object)
+        query_result.result_hash.each do |grouping_result|
+          group_result_keys = Utils.wrap(grouping_result[0])
+          group_result_value = grouping_result[1]
+          Utils.duplicate(keys, group_result_keys)
+          inner_hash = create_nested_result(keys, group_result_keys, object)
+          if query_result.aggregate.length == 1
+            inner_hash[query_result.aggregate[0]] = group_result_value
           else
-            object.deep_merge!(transform_aggregate(key, aggregate_key, aggregate_value))
+            aggregate_type = query_result.aggregate[0]
+            aggregate_attribute = query_result.aggregate[1]
+            inner_hash[aggregate_type] ||= {}
+            inner_hash[aggregate_type][aggregate_attribute] ||= group_result_value
           end
         end
-
-        transformed.presence || { key => [] }
       end
 
-      def transform_aggregate_result(aggregate_key, aggregate_value, key, object)
-        aggregate_value.each do |attribute, value|
-          object.deep_merge!(transform_attribute(key, aggregate_key, attribute, value))
-        end
-      end
+      def create_nested_result(keys, group_result_keys, object)
+        head_key, *rest_keys = keys
+        head_group_key, *rest_group_keys = group_result_keys
+        object[head_key] ||= {}
+        object[head_key][head_group_key] ||= {}
+        inner_hash = object[head_key][head_group_key]
+        return inner_hash if rest_keys.empty?
 
-      def transform_aggregate(key, aggregate, result)
-        return {} unless result.present?
-
-        hashes = result.map do |(keys, value)|
-          with_zipped = build_keys(key, keys)
-          with_zipped.append(aggregate)
-          with_zipped.reverse.inject(value) { |a, n| { n => a } }
-        end
-
-        merge(hashes)
-      end
-
-      def transform_attribute(key, aggregate, attribute, result)
-        return {} unless result.present?
-
-        hashes = result.map do |(keys, value)|
-          with_zipped = build_keys(key, keys)
-          with_zipped.append(aggregate)
-          with_zipped.append(attribute)
-          with_zipped.reverse.inject(value) { |a, n| { n => a } }
-        end
-        merge(hashes)
-      end
-
-      def merge(hashes)
-        hashes.each_with_object({}) do |hash, object|
-          object.deep_merge!(hash)
-        end
-      end
-
-      def build_keys(key, keys)
-        key = wrap(key)
-        keys = keys ? wrap(keys) : [nil]
-        nested = [:nested] * (key.length - 1)
-
-        with_zipped = key.zip(keys).zip(nested).flatten!
-        with_zipped.first(with_zipped.size - 1)
-      end
-
-      def wrap(object)
-        if object.nil?
-          []
-        elsif object.respond_to?(:to_ary)
-          object.to_ary || [object]
-        else
-          [object]
-        end
+        inner_hash[:group_by] ||= {}
+        create_nested_result(rest_keys, rest_group_keys, inner_hash[:group_by])
       end
     end
   end

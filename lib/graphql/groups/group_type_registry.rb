@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'singleton'
 
 module GraphQL
@@ -8,6 +10,10 @@ module GraphQL
       attr_reader :types
 
       def initialize
+        @types = {}
+      end
+
+      def clear
         @types = {}
       end
 

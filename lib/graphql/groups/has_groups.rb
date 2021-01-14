@@ -17,28 +17,27 @@ module GraphQL
       module ClassMethods
         attr_reader :class_scope
 
-        # TODO: Error if there are no groupings defined
         def by(name, **options, &block)
           query_method = options[:query_method] || name
           resolver_method = "resolve_#{query_method}".to_sym
           group_field name, [own_result_type],
-                      null: false,
-                      resolver_method: resolver_method,
                       query_method: query_method,
+                      null: true,
+                      resolver_method: resolver_method,
+
                       **options, &block
 
           define_method query_method do |**kwargs|
             kwargs[:scope].group(name)
           end
 
-          # TODO: Warn / Disallow overwriting these resolver methods
           define_method resolver_method do |**_|
             group[name]
           end
         end
 
         def group_field(*args, **kwargs, &block)
-          field_defn = Schema::GroupField.from_options(*args, owner: self, **kwargs, &block)
+          field_defn = field_class.from_options(*args, owner: self, **kwargs, &block)
           add_field(field_defn)
           field_defn
         end
@@ -65,7 +64,21 @@ module GraphQL
             field :group_by, own_group_type, null: false, camelize: true
 
             def group_by
-              group_result[1][:nested]
+              group_result[1][:group_by]
+            end
+          end)
+        end
+
+        def own_field_type
+          type = "#{name}Field"
+          base_field_type = field_class
+          registry = GraphQL::Groups::GroupTypeRegistry.instance
+          registry.get(type) || registry.register(type, Class.new(base_field_type) do
+            attr_reader :query_method
+
+            def initialize(query_method:, **options, &definition_block)
+              @query_method = query_method
+              super(**options.except(:query_method), &definition_block)
             end
           end)
         end

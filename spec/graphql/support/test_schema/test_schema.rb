@@ -2,9 +2,12 @@
 
 require 'graphql'
 require 'graphql/groups'
+require 'groupdate'
 
 require_relative 'db'
 require_relative 'models'
+
+class BaseField < GraphQL::Schema::Field; end
 
 class AuthorGroupResultType < GraphQL::Groups::Schema::GroupResultType
   aggregate :average do
@@ -25,8 +28,20 @@ class AuthorGroupType < GraphQL::Groups::Schema::GroupType
 
   by :age
 
+  by :nationality do
+    argument :upcase, String, required: false
+  end
+
   def age(scope:)
     scope.group("(cast(age/10 as int) * 10) || '-' || ((cast(age/10 as int) + 1) * 10)")
+  end
+
+  def nationality(scope:, upcase: false)
+    if upcase
+      scope.group('UPPER(nationality)')
+    else
+      scope.group(:nationality)
+    end
   end
 end
 
@@ -39,22 +54,9 @@ class BookGroupType < GraphQL::Groups::Schema::GroupType
     argument :interval, String, required: false
   end
 
-  by :list_price
-
-  def published_at(scope:, interval:)
-    case interval
-    when 'month'
-      scope.group("strftime('%Y-%m-01 00:00:00 UTC', published_at)")
-    when 'year'
-      scope.group("strftime('%Y-01-01 00:00:00 UTC', published_at)")
-    else
-      scope.group("strftime('%Y-%m-%d 00:00:00 UTC', published_at)")
-    end
-  end
-
-  def list_price(scope:)
-    currency = context[:currency] || ' $'
-    scope.group("list_price || ' #{currency}'")
+  def published_at(scope:, interval: nil)
+    interval ||= context[:default_interval]
+    scope.group_by_period(interval.to_sym, :published_at)
   end
 end
 
