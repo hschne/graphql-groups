@@ -46,6 +46,7 @@ module GraphQL
       end
 
       def count_queries(aggregate_selections, context)
+        # TODO: When getting multiple aggregates for the same base data we could do just a single query instead of many
         aggregate_selections
           .select { |selection| selection.name == :count }
           .select { |selection| selection.selections.map(&:name).include?(attribute) }
