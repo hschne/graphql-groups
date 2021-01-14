@@ -49,7 +49,6 @@ module GraphQL
         # TODO: When getting multiple aggregates for the same base data we could do just a single query instead of many
         aggregate_selections
           .select { |selection| selection.name == :count }
-          .select { |selection| selection.selections.map(&:name).include?(attribute) }
           .map do |selection|
           field = selection.field
           count_proc = proc { |scope| field.owner.send(:new, {}, nil).public_send(field.query_method, scope: scope) }
