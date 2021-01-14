@@ -64,7 +64,10 @@ module GraphQL
       end
 
       def attribute_queries(context, selection)
-        selection.field.own_attributes.map do |attribute|
+        selection.field
+          .own_attributes
+          .select { |attribute| selection.selections.map(&:name).include?(attribute) }
+          .map do |attribute|
           aggregate_proc = proc_from_attribute(selection.field, attribute, selection.arguments)
           combined = combine_procs(context.current_proc, aggregate_proc)
           PendingQuery.new(context.grouping, [selection.name, attribute], combined)
