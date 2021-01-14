@@ -33,9 +33,8 @@ module GraphQL
         field name, type, extras: [:lookahead], null: false, **options
 
         define_method name do |lookahead: nil|
-          base_query = type.authorized_new(object, context).scope
-          pending_queries = QueryBuilder.parse(lookahead, context, base_query)
-          query_results = pending_queries.map { |pending_query| pending_query.execute }
+          pending_queries = QueryBuilder.parse(lookahead, object, context)
+          query_results = pending_queries.map(&:execute)
           GraphQL::Groups::ResultTransformer.new.run(query_results)
         end
       end

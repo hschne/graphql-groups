@@ -3,14 +3,15 @@
 module GraphQL
   module Groups
     class QueryBuilder
-      def self.parse(lookahead, context, base_query)
-        QueryBuilder.new(lookahead, context, base_query).group_selections
+      def self.parse(lookahead, object, context)
+        QueryBuilder.new(lookahead, object, context).group_selections
       end
 
-      def initialize(lookahead, context, base_query)
+      def initialize(lookahead, object, context)
         @lookahead = lookahead
         @context = context
-        @base_query = proc { base_query }
+        type = @lookahead.field.type.of_type
+        @base_query = proc { type.authorized_new(object, context).scope }
         super()
       end
 
@@ -39,24 +40,35 @@ module GraphQL
         aggregate_selections = current_selection
                                  .selections
                                  .select { |selection| selection.field.is_a?(GraphQL::Groups::Schema::AggregateField) }
-        count_queries = aggregate_selections
-                          .select { |selection| selection.name == :count }
-                          .map do |selection|
+        count_queries = count_queries(aggregate_selections, context)
+        aggregate_queries = aggregate_queries(aggregate_selections, context)
+        (count_queries + aggregate_queries)
+      end
+
+      def count_queries(aggregate_selections, context)
+        aggregate_selections
+          .select { |selection| selection.name == :count }
+          .map do |selection|
           field = selection.field
           count_proc = proc { |scope| field.owner.send(:new, {}, nil).public_send(field.query_method, scope: scope) }
           combined = combine_procs(context.current_proc, count_proc)
           PendingQuery.new(context.grouping, selection.name, combined)
         end
-        aggregate_queries = aggregate_selections
-                              .select { |selection| selection.field.own_attributes.present? }
-                              .map do |selection|
-          selection.field.own_attributes.map do |attribute|
-            aggregate_proc = proc_from_attribute(selection.field, attribute, selection.arguments)
-            combined = combine_procs(context.current_proc, aggregate_proc)
-            PendingQuery.new(context.grouping, [selection.name, attribute], combined)
-          end
+      end
+
+      def aggregate_queries(aggregate_selections, context)
+        aggregate_selections
+          .select { |selection| selection.field.own_attributes.present? }
+          .map { |selection| attribute_queries(context, selection) }
+          .flatten
+      end
+
+      def attribute_queries(context, selection)
+        selection.field.own_attributes.map do |attribute|
+          aggregate_proc = proc_from_attribute(selection.field, attribute, selection.arguments)
+          combined = combine_procs(context.current_proc, aggregate_proc)
+          PendingQuery.new(context.grouping, [selection.name, attribute], combined)
         end
-        (count_queries + aggregate_queries)
       end
 
       def combine_procs(base_proc, new_proc)
