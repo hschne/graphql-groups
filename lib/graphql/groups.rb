@@ -4,6 +4,7 @@ require 'graphql/groups/version'
 
 require 'graphql'
 
+require 'graphql/groups/utils'
 require 'graphql/groups/group_type_registry'
 require 'graphql/groups/schema/group_field'
 require 'graphql/groups/schema/aggregate_field'

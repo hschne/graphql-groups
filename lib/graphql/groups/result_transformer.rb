@@ -19,8 +19,9 @@ module GraphQL
         return object[keys[0]] = [] if query_result.result_hash.empty?
 
         query_result.result_hash.each do |grouping_result|
-          group_result_keys = grouping_result[0]
+          group_result_keys = Utils.wrap(grouping_result[0])
           group_result_value = grouping_result[1]
+          Utils.duplicate(keys, group_result_keys)
           inner_hash = create_nested_result(keys, group_result_keys, object)
           if query_result.aggregate.length == 1
             inner_hash[query_result.aggregate[0]] = group_result_value

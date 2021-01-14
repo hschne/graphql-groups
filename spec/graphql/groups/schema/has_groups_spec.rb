@@ -88,7 +88,7 @@ module GraphQL
               by(:name)
             end
 
-            field_type = item.fields['name'].type.of_type.of_type.of_type.graphql_name
+            field_type = item.fields['name'].type.of_type.of_type.graphql_name
             expect(field_type).to eq(GroupResultType.name.demodulize)
           end
         end
@@ -107,7 +107,7 @@ module GraphQL
               by(:name)
             end
 
-            field_type = item.fields['name'].type.of_type.of_type.of_type.graphql_name
+            field_type = item.fields['name'].type.of_type.of_type.graphql_name
             expect(field_type).to eq('CustomResultType')
           end
         end

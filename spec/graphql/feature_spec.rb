@@ -23,6 +23,23 @@ RSpec.describe 'feature', type: :feature do
     expect(group['count']).to eq(1)
   end
 
+  it 'suports empty query' do
+    Author.create(name: 'a', age: 30)
+    Author.create(name: 'b', age: 30)
+
+    query = GQLi::DSL.query {
+      authorGroups {
+        name {
+          key
+        }
+      }
+    }.to_gql
+
+    result = GroupsSchema.execute(query)
+
+    expect(result['data']['authorGroups']['name']).to be_nil
+  end
+
   it 'supports group based on field name' do
     query = GQLi::DSL.query {
       authorGroups {
@@ -129,6 +146,29 @@ RSpec.describe 'feature', type: :feature do
 
     group = result['data']['authorGroups']['name'][0]['groupBy']['age'][0]
     expect(group['key']).to eq('30-40')
+    expect(group['count']).to eq(1)
+  end
+
+  it 'supports inner level result with same key' do
+    Author.create(name: 'name', age: 30)
+
+    query = GQLi::DSL.query {
+      authorGroups {
+        name {
+          groupBy {
+            name {
+              key
+              count
+            }
+          }
+        }
+      }
+    }.to_gql
+
+    result = GroupsSchema.execute(query)
+
+    group = result['data']['authorGroups']['name'][0]['groupBy']['name'][0]
+    expect(group['key']).to eq('name')
     expect(group['count']).to eq(1)
   end
 

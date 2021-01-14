@@ -22,7 +22,7 @@ module GraphQL
           resolver_method = "resolve_#{query_method}".to_sym
           group_field name, [own_result_type],
                       query_method: query_method,
-                      null: false,
+                      null: true,
                       resolver_method: resolver_method,
 
                       **options, &block
