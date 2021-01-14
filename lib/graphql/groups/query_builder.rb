@@ -48,6 +48,7 @@ module GraphQL
       def count_queries(aggregate_selections, context)
         aggregate_selections
           .select { |selection| selection.name == :count }
+          .select { |selection| selection.selections.map(&:name).include?(attribute) }
           .map do |selection|
           field = selection.field
           count_proc = proc { |scope| field.owner.send(:new, {}, nil).public_send(field.query_method, scope: scope) }
