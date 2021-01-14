@@ -11,12 +11,8 @@ class PendingQuery
     @query = proc
   end
 
-  def execute(scope)
-    result = if @aggregate.size == 1
-               @query.call(scope: scope)
-             else
-               @query.call(scope: scope, attribute: @aggregate[1])
-             end
+  def execute
+    result = @query.call
     QueryResult.new(@key, @aggregate, result)
   end
 

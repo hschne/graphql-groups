@@ -16,12 +16,6 @@ class QueryBuilderContext
   end
 
   def combine_procs(base_proc, new_proc)
-    return new_proc unless base_proc
-
-    proc do |**kwargs|
-      base = base_proc.call(**kwargs)
-      kwargs[:scope] = base
-      new_proc.call(**kwargs)
-    end
+    proc { new_proc.call(base_proc.call) }
   end
 end

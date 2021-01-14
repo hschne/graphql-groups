@@ -171,8 +171,8 @@ RSpec.describe 'feature', type: :feature do
 
     result = GroupsSchema.execute(query)
 
-    group = result['data']['authorGroups']['aut'][0]
-    expect(group['key']).to eq('name')
+    group = result['data']['authorGroups']['nationality'][0]
+    expect(group['key']).to eq('aut')
     expect(group['average']['age']).to eq(7.5)
   end
 

@@ -3,17 +3,18 @@
 module GraphQL
   module Groups
     class QueryBuilder
-      def self.parse(lookahead, context)
-        QueryBuilder.new(lookahead, context).group_selections
+      def self.parse(lookahead, context, base_query)
+        QueryBuilder.new(lookahead, context, base_query).group_selections
       end
 
-      def initialize(lookahead, context)
+      def initialize(lookahead, context, base_query)
         @lookahead = lookahead
         @context = context
+        @base_query = proc { base_query }
         super()
       end
 
-      def group_selections(lookahead = @lookahead, current_context = QueryBuilderContext.new)
+      def group_selections(lookahead = @lookahead, current_context = QueryBuilderContext.new([], @base_query))
         selections = lookahead.selections
         group_field_type = lookahead.field.type.of_type.field_class
         group_selections = selections.select { |selection| selection.field.is_a?(group_field_type) }
@@ -42,7 +43,7 @@ module GraphQL
                           .select { |selection| selection.name == :count }
                           .map do |selection|
           field = selection.field
-          count_proc = proc { |**kwargs| field.owner.send(:new, {}, nil).public_send(field.query_method, **kwargs) }
+          count_proc = proc { |scope| field.owner.send(:new, {}, nil).public_send(field.query_method, scope: scope) }
           combined = combine_procs(context.current_proc, count_proc)
           PendingQuery.new(context.grouping, selection.name, combined)
         end
@@ -50,7 +51,7 @@ module GraphQL
                               .select { |selection| selection.field.own_attributes.present? }
                               .map do |selection|
           selection.field.own_attributes.map do |attribute|
-            aggregate_proc = proc_from_selection(selection.field, selection.arguments)
+            aggregate_proc = proc_from_attribute(selection.field, attribute, selection.arguments)
             combined = combine_procs(context.current_proc, aggregate_proc)
             PendingQuery.new(context.grouping, [selection.name, attribute], combined)
           end
@@ -59,15 +60,20 @@ module GraphQL
       end
 
       def combine_procs(base_proc, new_proc)
-        proc do |kwargs|
-          base = base_proc.call(**kwargs)
-          kwargs[:scope] = base
-          new_proc.call(**kwargs)
-        end
+        proc { new_proc.call(base_proc.call) }
       end
 
       def proc_from_selection(field, arguments)
-        proc { |**kwargs| field.owner.authorized_new(nil, @context).public_send(field.query_method, **arguments, **kwargs) }
+        proc { |scope| field.owner.authorized_new(nil, @context).public_send(field.query_method, scope: scope, **arguments) }
+      end
+
+      def proc_from_attribute(field, attribute, arguments)
+        proc do |scope|
+          field.owner.authorized_new(nil, @context)
+            .public_send(field.query_method,
+                         scope: scope,
+                         attribute: attribute, **arguments)
+        end
       end
     end
   end
