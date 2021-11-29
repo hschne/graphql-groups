@@ -13,8 +13,6 @@ module GraphQL
 
         field :key, String, null: true
 
-        field :count, Integer, null: false
-
         aggregate_field :count, Integer, null: false, query_method: :count, resolver_method: :resolve_count
 
         def key
