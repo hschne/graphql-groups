@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    graphql-groups (0.2.0)
+    graphql-groups (0.2.1)
       graphql (~> 1, > 1.9)
 
 GEM
@@ -125,4 +125,4 @@ DEPENDENCIES
   sqlite3 (~> 1.4.2)
 
 BUNDLED WITH
-   2.1.4
+   2.2.26
