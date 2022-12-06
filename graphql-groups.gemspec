@@ -47,5 +47,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'simplecov', '~> 0.21.2'
   spec.add_development_dependency 'sqlite3', '~> 1.4.2'
 
-  spec.add_dependency 'graphql', '~> 2.0.15', '> 1.9'
+  spec.add_dependency 'graphql', '> 1.9'
 end
