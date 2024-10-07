@@ -31,6 +31,7 @@ module GraphQL
 
         def aggregate_field(*args, **kwargs, &block)
           field_defn = Schema::AggregateField.from_options(*args, owner: self, **kwargs, &block)
+          field_defn.ensure_loaded
           add_field(field_defn)
           field_defn
         end

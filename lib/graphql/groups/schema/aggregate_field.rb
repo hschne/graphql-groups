@@ -8,7 +8,6 @@ module GraphQL
 
         def initialize(query_method:, **kwargs, &definition_block)
           @query_method = query_method
-          @own_attributes ||= []
           super(**kwargs, &definition_block)
         end
 
