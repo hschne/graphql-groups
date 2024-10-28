@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
 
   spec.summary = 'Create flexible and fast aggregation queries with graphql-ruby'
   spec.description = <<~HEREDOC
-    GraphQL Groups makes it easy to add aggregation queries to your GraphQL schema. It combines a simple, flexible 
+    GraphQL Groups makes it easy to add aggregation queries to your GraphQL schema. It combines a simple, flexible#{' '}
     schema definition with high performance
   HEREDOC
   spec.homepage = 'https://github.com/hschne/graphql-groups'
@@ -44,7 +44,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec', '~> 3.0'
   spec.add_development_dependency 'rubocop', '~> 0.88'
   spec.add_development_dependency 'rubocop-rspec', '~> 1.42'
-  spec.add_development_dependency 'simplecov', '~> 0.21.2'
+  spec.add_development_dependency 'simplecov', '~> 0.22'
   spec.add_development_dependency 'sqlite3', '~> 1.4.2'
 
   spec.add_dependency 'graphql', '> 1.9'
