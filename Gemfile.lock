@@ -78,8 +78,7 @@ GEM
     rainbow (3.0.0)
     rake (13.0.1)
     regexp_parser (1.7.1)
-    rexml (3.3.3)
-      strscan
+    rexml (3.3.9)
     rmagick (4.1.2)
     rspec (3.9.0)
       rspec-core (~> 3.9.0)
@@ -117,7 +116,6 @@ GEM
     simplecov_json_formatter (0.1.4)
     sqlite3 (2.1.1)
       mini_portile2 (~> 2.8.0)
-    strscan (3.1.0)
     timeout (0.4.1)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
