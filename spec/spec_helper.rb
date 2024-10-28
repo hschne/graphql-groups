@@ -36,3 +36,8 @@ RSpec.configure do |config|
     DatabaseCleaner.clean
   end
 end
+
+if ENV['CI']
+  require 'simplecov_json_formatter'
+  SimpleCov.formatter = SimpleCov::Formatter::JSONFormatter
+end
