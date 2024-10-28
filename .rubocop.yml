@@ -1,10 +1,13 @@
 require: rubocop-rspec
 
+AllCops:
+  TargetRubyVersion: 3.1
+
 Layout/LineLength:
   Max: 120
 
 Metrics/BlockLength:
-  ExcludedMethods: ['describe', 'context']
+  ExcludedMethods: ["describe", "context"]
 
 Layout/MultilineMethodCallIndentation:
   EnforcedStyle: indented_relative_to_receiver
