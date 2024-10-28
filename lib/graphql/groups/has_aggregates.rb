@@ -15,7 +15,7 @@ module GraphQL
           query_method = options[:query_method] || name
           field = aggregate_field name, aggregate_type,
                                   null: false,
-                                  query_method: query_method,
+                                  query_method:,
                                   resolver_method: resolve_method,
                                   **options, &block
           aggregate_type.add_fields(field.own_attributes)
@@ -31,7 +31,7 @@ module GraphQL
 
         def aggregate_field(*args, **kwargs, &block)
           field_defn = Schema::AggregateField.from_options(*args, owner: self, **kwargs, &block)
-          field_defn.ensure_loaded
+          field_defn.ensure_loaded if Gem::Version.new(GraphQL::VERSION) >= Gem::Version.new('2.3')
           add_field(field_defn)
           field_defn
         end
