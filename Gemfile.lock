@@ -46,7 +46,7 @@ GEM
       hashie (~> 3.0)
       http (> 0.8, < 3.0)
       multi_json (~> 1)
-    graphql (2.3.19)
+    graphql (2.3.21)
       base64
       fiber-storage
     groupdate (6.5.1)
