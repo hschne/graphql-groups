@@ -37,7 +37,17 @@ module GraphQL
         end
 
         def group_field(*args, **kwargs, &block)
-          field_defn = field_class.from_options(*args, owner: self, **kwargs, &block)
+          if args.any?
+            name_arg = args.shift
+            type_arg = args.shift
+            desc_arg = args.shift
+
+            kwargs[:name] ||= name_arg
+            kwargs[:type] ||= type_arg if type_arg
+            kwargs[:description] ||= desc_arg if desc_arg
+          end
+
+          field_defn = field_class.new(owner: self, **kwargs, &block)
           add_field(field_defn)
           field_defn
         end
