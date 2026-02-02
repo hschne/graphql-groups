@@ -19,10 +19,11 @@ jobs:
         run: bundle install
       - name: Run tests
         run: bundle exec rspec
-      - name: Report coverage
-        uses: paambaati/codeclimate-action@v9.0.0
-        env:
-          CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
-        with:
-          # Coverage is already generated in test step, need to run anything again
-          coverageCommand: echo '' > /dev/null
+#      - name: Report coverage
+#        # DEPRECATED: paambaati/codeclimate-action is deprecated in favor of qlty-app/qlty-action.
+#        uses: paambaati/codeclimate-action@v9.0.0
+#        env:
+#          CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
+#        with:
+#          # Coverage is already generated in test step, need to run anything again
+#          coverageCommand: echo '' > /dev/null
