@@ -39,7 +39,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'database_cleaner-active_record', '~> 2.1'
   spec.add_development_dependency 'gqli', '~> 1.0'
   spec.add_development_dependency 'groupdate', '~> 6.5.1'
-  spec.add_development_dependency 'gruff', '~> 0.10'
   spec.add_development_dependency 'rake', '~> 13.0'
   spec.add_development_dependency 'rspec', '~> 3.0'
   spec.add_development_dependency 'rubocop', '~> 0.88'
