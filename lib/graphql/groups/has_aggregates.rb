@@ -30,7 +30,17 @@ module GraphQL
         end
 
         def aggregate_field(*args, **kwargs, &block)
-          field_defn = Schema::AggregateField.from_options(*args, owner: self, **kwargs, &block)
+          if args.any?
+            name_arg = args.shift
+            type_arg = args.shift
+            desc_arg = args.shift
+
+            kwargs[:name] ||= name_arg
+            kwargs[:type] ||= type_arg if type_arg
+            kwargs[:description] ||= desc_arg if desc_arg
+          end
+
+          field_defn = Schema::AggregateField.new(owner: self, **kwargs, &block)
           field_defn.ensure_loaded if Gem::Version.new(GraphQL::VERSION) >= Gem::Version.new('2.3')
           add_field(field_defn)
           field_defn

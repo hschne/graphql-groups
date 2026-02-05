@@ -14,7 +14,9 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
       - name: Install dependencies
-        run: bundle install
+        run: |
+          bundle config set --local without 'gruff'
+          bundle install
       - name: Run tests
         run: bundle exec rspec
       - name: Report coverage
