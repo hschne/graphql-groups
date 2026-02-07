@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    graphql-groups (0.2.3)
+    graphql-groups (0.3.0)
       graphql (> 1.9)
 
 GEM
@@ -178,7 +178,7 @@ CHECKSUMS
   fiber-storage (1.0.1) sha256=f48e5b6d8b0be96dac486332b55cee82240057065dc761c1ea692b2e719240e1
   gqli (1.2.0) sha256=e0e103a7dc324572ea5dbcbb22a9f8815041bccf078e4da5612d99ab540370de
   graphql (2.5.19) sha256=6c70cf41cbe7d02921fb679229689d181768a45a2a7cc2f39b240cdf3a5fa299
-  graphql-groups (0.2.3)
+  graphql-groups (0.3.0)
   groupdate (6.7.0) sha256=beaa8d5bf3856814681914a1d4a20e77436a2214b85d0017dc2ea5c355fb6777
   hashie (5.1.0) sha256=c266471896f323c446ea8207f8ffac985d2718df0a0ba98651a3057096ca3870
   http (5.3.1) sha256=c50802d8e9be3926cb84ac3b36d1a31fbbac383bc4cbecdce9053cb604231d7d
