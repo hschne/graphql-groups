@@ -79,8 +79,6 @@ query myQuery{
 
 For a showcase of what you can do with `graphql-groups` check out [graphql-groups-demo](https://github.com/hschne/graphql-groups-demo) 
 
-Find a hosted version of the demo app [on Heroku](https://graphql-groups-demo.herokuapp.com/). 
-
 ### Grouping by Multiple Attributes
 
 This library really shines when you want to group by multiple attributes, or otherwise retrieve complex statistical information
