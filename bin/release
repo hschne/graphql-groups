@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -euo pipefail
+IFS=$'\n\t'
+set -vx
+
+if [ -z "${1:-}" ]; then
+  echo "Usage: $0 <version>"
+  exit 1
+fi
+
+VERSION=$1
+VERSION_FILE="lib/graphql/groups/version.rb"
+GEM_SPEC="graphql-groups.gemspec"
+GEM_NAME="graphql-groups"
+
+sed -i "s/VERSION = '.*'/VERSION = '${VERSION}'/" "$VERSION_FILE"
+
+bundle install
+
+gem build "$GEM_SPEC"
+gem push "${GEM_NAME}-${VERSION}.gem"
+
+git add "$VERSION_FILE" Gemfile.lock
+git commit -m "v${VERSION}"
+git tag -m "Release ${VERSION}" "v${VERSION}"
+
+CURRENT_BRANCH=$(git branch --show-current)
+git push origin "$CURRENT_BRANCH" --tags
+
+rm "${GEM_NAME}-${VERSION}.gem"
