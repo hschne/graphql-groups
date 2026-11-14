@@ -12,5 +12,5 @@ group :development, :test do
   gem 'rubocop', '~> 1.84'
   gem 'rubocop-rspec', '~> 3.9'
   gem 'simplecov', '~> 0.22'
-  gem 'sqlite3', '~> 2.9'
+  gem 'sqlite3', '~> 2.10'
 end

@@ -128,9 +128,9 @@ GEM
       simplecov_json_formatter (~> 0.1)
     simplecov-html (0.13.2)
     simplecov_json_formatter (0.1.4)
-    sqlite3 (2.9.0)
+    sqlite3 (2.10.2)
       mini_portile2 (~> 2.8.0)
-    sqlite3 (2.9.0-x86_64-linux-gnu)
+    sqlite3 (2.10.2-x86_64-linux-gnu)
     timeout (0.6.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
@@ -154,7 +154,7 @@ DEPENDENCIES
   rubocop (~> 1.84)
   rubocop-rspec (~> 3.9)
   simplecov (~> 0.22)
-  sqlite3 (~> 2.9)
+  sqlite3 (~> 2.10)
 
 CHECKSUMS
   activemodel (8.1.2) sha256=e21358c11ce68aed3f9838b7e464977bc007b4446c6e4059781e1d5c03bcf33e
@@ -214,8 +214,8 @@ CHECKSUMS
   simplecov (0.22.0) sha256=fe2622c7834ff23b98066bb0a854284b2729a569ac659f82621fc22ef36213a5
   simplecov-html (0.13.2) sha256=bd0b8e54e7c2d7685927e8d6286466359b6f16b18cb0df47b508e8d73c777246
   simplecov_json_formatter (0.1.4) sha256=529418fbe8de1713ac2b2d612aa3daa56d316975d307244399fa4838c601b428
-  sqlite3 (2.9.0) sha256=ece9c00b32ec5f550d3a4a35c41ea8d738563589f090b9dfd0d510b7ae5f296c
-  sqlite3 (2.9.0-x86_64-linux-gnu) sha256=72fff9bd750070ba3af695511ba5f0e0a2d8a9206f84869640b3e99dfaf3d5a5
+  sqlite3 (2.10.2) sha256=f1ea68cd3287f8a49f39a088ac9e4bd0ef4e7f394c3d4a60dd4c7e44b0566964
+  sqlite3 (2.10.2-x86_64-linux-gnu) sha256=ca92731ab464df9cae503fa1a439a549e2724f6953c8c05a7769b59366e38f15
   timeout (0.6.0) sha256=6d722ad619f96ee383a0c557ec6eb8c4ecb08af3af62098a0be5057bf00de1af
   tzinfo (2.0.6) sha256=8daf828cc77bcf7d63b0e3bdb6caa47e2272dcfaf4fbfe46f8c3a9df087a829b
   unicode-display_width (3.2.0) sha256=0cdd96b5681a5949cdbc2c55e7b420facae74c4aaf9a9815eee1087cb1853c42
